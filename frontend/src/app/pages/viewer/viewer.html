@@ -1,0 +1,96 @@
+<div class="px-6 md:px-12 py-10 animate-fadeIn">
+
+  <!-- Breadcrumbs -->
+  @if (!loading && breadcrumbs.length > 0) {
+    <div class="mb-6">
+      <app-breadcrumb [segments]="breadcrumbs"></app-breadcrumb>
+    </div>
+  }
+
+  <!-- Back Button -->
+  <div class="mb-4">
+    <app-back-button></app-back-button>
+  </div>
+
+  <!-- Loading Material Info -->
+  @if (loading) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh]">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mb-4"></div>
+      <p class="text-brand-charcoal">Loading material...</p>
+    </div>
+  }
+
+  <!-- PDF Viewer -->
+  @if (!loading && material) {
+
+    <!-- Subject Context Bar -->
+    @if (subject) {
+      <div class="mb-6 p-4 bg-brand-mint bg-opacity-20 rounded-lg border border-brand-mint">
+        <div class="flex flex-wrap items-center gap-3">
+          <div>
+            <p class="text-sm text-brand-charcoal mb-1">Subject</p>
+            <h3 class="text-lg font-semibold text-brand-primary">{{ subject.name }}</h3>
+            <p class="text-xs text-brand-charcoal">Code: {{ subject.code }}</p>
+          </div>
+          <div class="flex flex-wrap gap-2 ml-auto">
+            <span class="inline-block bg-brand-accent text-white px-3 py-1 rounded-full text-xs font-medium">
+              {{ subject.regulationCode | uppercase }}
+            </span>
+            <span class="inline-block bg-brand-primary text-white px-3 py-1 rounded-full text-xs font-medium">
+              {{ subject.semesterDisplayName }}
+            </span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Title -->
+    <h2 class="text-3xl font-semibold text-brand-primary mb-2">
+      {{ material.title }}
+    </h2>
+
+    <!-- Metadata -->
+    <div class="flex flex-wrap items-center gap-4 mb-6">
+      <span class="inline-block bg-brand-accent text-white px-3 py-1 rounded-full text-xs font-medium">
+        {{ material.materialType | titlecase }}
+      </span>
+      <p class="text-brand-charcoal text-sm">
+        Uploaded on {{ material.uploadedOn | date: 'mediumDate' }}
+      </p>
+      @if (material.subjectName) {
+        <p class="text-brand-charcoal text-sm">
+          Subject: {{ material.subjectName }}
+        </p>
+      }
+    </div>
+
+
+
+  <!-- PDF Viewer -->
+
+  <div class="w-full h-[85vh] bg-white rounded-xl shadow overflow-hidden flex flex-col">
+
+    <!-- Action Bar -->
+    <div class="flex justify-between items-center p-4 border-b bg-gray-50">
+      <span class="text-sm text-brand-charcoal">PDF Viewer</span>
+      <a [href]="material.cloudinaryUrl" target="_blank"
+        class="bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition text-sm">
+        Open in New Tab
+      </a>
+    </div>
+
+    <!-- PDF Container - Simple iframe with safeUrl -->
+    <div class="flex-1 relative bg-gray-100">
+      <iframe
+        [src]="material.cloudinaryUrl | safeUrl"
+        class="w-full h-full rounded-b-xl"
+        style="border:none;"
+        title="PDF Viewer"
+      ></iframe>
+    </div>
+
+  </div>
+
+  }
+
+</div>
