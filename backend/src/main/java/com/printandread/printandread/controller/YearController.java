@@ -1,8 +1,10 @@
 package com.printandread.printandread.controller;
 
+import com.printandread.printandread.dto.YearCreateRequest;
 import com.printandread.printandread.dto.YearLevelDTO;
 import com.printandread.printandread.service.YearLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +31,11 @@ public class YearController {
     public ResponseEntity<YearLevelDTO> getYearById(@PathVariable Long id) {
         YearLevelDTO yearLevel = yearLevelService.getYearDtoById(id);
         return ResponseEntity.ok(yearLevel);
+    }
+    
+    @PostMapping
+    public ResponseEntity<YearLevelDTO> createYear(@RequestBody YearCreateRequest request) {
+        YearLevelDTO year = yearLevelService.createYear(request.getYearNumber());
+        return ResponseEntity.status(HttpStatus.CREATED).body(year);
     }
 }

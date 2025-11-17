@@ -1,8 +1,10 @@
 package com.printandread.printandread.controller;
 
+import com.printandread.printandread.dto.SubjectCreateRequest;
 import com.printandread.printandread.dto.SubjectResponseDTO;
 import com.printandread.printandread.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,5 +60,23 @@ public class SubjectController {
     public ResponseEntity<SubjectResponseDTO> getSubjectById(@PathVariable Long id) {
         SubjectResponseDTO subject = subjectService.getSubjectDtoById(id);
         return ResponseEntity.ok(subject);
+    }
+    
+    /**
+     * POST /api/subjects
+     * Create a new subject
+     */
+    @PostMapping
+    public ResponseEntity<SubjectResponseDTO> createSubject(@RequestBody SubjectCreateRequest request) {
+        SubjectResponseDTO subject = subjectService.createSubject(
+            request.getName(),
+            request.getCode(),
+            request.getBranchId(),
+            request.getRegulationId(),
+            request.getYearId(),
+            request.getSemesterId(),
+            request.getSubBranchId()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(subject);
     }
 }

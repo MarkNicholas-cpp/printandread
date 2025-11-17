@@ -35,3 +35,27 @@ yarn-error.log*
 *.tmp
 *.temp
 
+# Scripts and database exports (local development only)
+scripts/
+backend/scripts/
+*.sql
+!backend/src/main/resources/db/migration/*.sql
+
+# Database exports and backups
+*_export.sql
+*_backup.sql
+*_migration.sql
+printandread_data_export.sql
+printandread_full_backup*.sql
+
+# PDF materials (local uploads)
+pdf_materials/
+*.pdf
+
+# Spring Boot default files
+backend/HELP.md
+backend/.mvn/
+
+# Package lock files (optional - some teams prefer to commit these)
+# Uncomment if you want to ignore them
+# package-lock.json

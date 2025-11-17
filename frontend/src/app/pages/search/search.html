@@ -1,0 +1,146 @@
+<div class="page-container animate-fadeIn">
+  <!-- Header -->
+  <div class="mb-8">
+    <h2 class="page-title">
+      Search Results
+    </h2>
+    @if (hasSearched && !loading) {
+      <p class="page-description mb-0">
+        Found {{ getTotalResults() }} {{ getTotalResults() === 1 ? 'result' : 'results' }} for "<strong>{{ searchQuery }}</strong>"
+      </p>
+    } @else if (!hasSearched) {
+      <p class="page-description mb-0">
+        Enter a search query to find materials, subjects, branches, and regulations.
+      </p>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <app-grid-skeleton 
+      [count]="6" 
+      columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      [lines]="2"
+      [showBadge]="true"
+      [showButton]="false"
+    ></app-grid-skeleton>
+  }
+
+  <!-- Results -->
+  @if (!loading && hasSearched) {
+    @if (getTotalResults() === 0) {
+      <app-empty-state
+        icon="search"
+        title="No Results Found"
+        message="We couldn't find any results for '{{ searchQuery }}'. Try different keywords or check your spelling."
+        [showAction]="true"
+        actionLabel="Back to Home"
+        [actionRoute]="['/home']"
+      ></app-empty-state>
+    } @else {
+      <!-- Subjects -->
+      @if (results.subjects.length > 0) {
+        <div class="section-spacing">
+          <h3 class="text-2xl font-semibold text-brand-primary mb-4">
+            Subjects ({{ results.subjects.length }})
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (subject of results.subjects; track subject.id) {
+              <div
+                (click)="navigateToSubject(subject)"
+                class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent"
+              >
+                <h4 class="section-title">
+                  {{ subject.name }}
+                </h4>
+                <p class="text-brand-accent text-sm font-medium mb-2">
+                  Code: {{ subject.code }}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="badge-accent">{{ subject.regulationCode | uppercase }}</span>
+                  <span class="badge-primary">{{ subject.semesterDisplayName }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Materials -->
+      @if (results.materials.length > 0) {
+        <div class="section-spacing">
+          <h3 class="text-2xl font-semibold text-brand-primary mb-4">
+            Materials ({{ results.materials.length }})
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (material of results.materials; track material.id) {
+              <div
+                (click)="navigateToMaterial(material)"
+                class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent"
+              >
+                <h4 class="section-title">
+                  {{ material.title }}
+                </h4>
+                <p class="text-brand-accent text-sm font-medium mb-2">
+                  {{ material.subjectName }}
+                </p>
+                <span class="badge-accent">
+                  {{ material.materialType | titlecase }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Branches -->
+      @if (results.branches.length > 0) {
+        <div class="section-spacing">
+          <h3 class="text-2xl font-semibold text-brand-primary mb-4">
+            Branches ({{ results.branches.length }})
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (branch of results.branches; track branch.id) {
+              <div
+                (click)="navigateToBranch(branch)"
+                class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent"
+              >
+                <h4 class="section-title">
+                  {{ branch.name }}
+                </h4>
+                <p class="text-brand-accent text-sm font-medium">
+                  Code: {{ branch.code | uppercase }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Regulations -->
+      @if (results.regulations.length > 0) {
+        <div class="section-spacing">
+          <h3 class="text-2xl font-semibold text-brand-primary mb-4">
+            Regulations ({{ results.regulations.length }})
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (regulation of results.regulations; track regulation.id) {
+              <div
+                (click)="navigateToRegulation(regulation)"
+                class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent"
+              >
+                <h4 class="text-2xl font-bold text-brand-primary mb-2">
+                  {{ regulation.code }}
+                </h4>
+                <p class="text-brand-charcoal font-medium">
+                  {{ regulation.name }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  }
+</div>
+

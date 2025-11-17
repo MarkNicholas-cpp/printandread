@@ -1,0 +1,27 @@
+<div class="card-skeleton rounded-xl shadow-sm bg-white p-6 border border-gray-100">
+  <!-- Title Line -->
+  <app-skeleton width="70%" height="1.5rem" class="mb-3"></app-skeleton>
+  
+  <!-- Badge (if shown) -->
+  @if (showBadge) {
+    <app-skeleton width="30%" height="1.25rem" class="mb-3 rounded-full"></app-skeleton>
+  }
+  
+  <!-- Content Lines -->
+  @for (line of getLinesArray(); track line) {
+    <app-skeleton 
+      [width]="line === lines - 1 ? '60%' : '100%'" 
+      height="0.875rem" 
+      class="mb-2"
+    ></app-skeleton>
+  }
+  
+  <!-- Button (if shown) -->
+  @if (showButton) {
+    <div class="flex gap-3 mt-4">
+      <app-skeleton width="50%" height="2.5rem" class="rounded-lg"></app-skeleton>
+      <app-skeleton width="50%" height="2.5rem" class="rounded-lg"></app-skeleton>
+    </div>
+  }
+</div>
+

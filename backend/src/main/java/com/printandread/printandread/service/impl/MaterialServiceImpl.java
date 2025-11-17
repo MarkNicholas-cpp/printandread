@@ -161,6 +161,16 @@ public class MaterialServiceImpl implements MaterialService {
         return mapToDto(material);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaterialResponseDTO> getRecentMaterialDtos(int limit) {
+        List<Material> materials = materialRepository.findAllOrderByUploadedOnDesc();
+        return materials.stream()
+                .limit(limit)
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     private MaterialResponseDTO mapToDto(Material material) {
         // Load lazy-loaded subject relationship
         Subject subject = material.getSubject();

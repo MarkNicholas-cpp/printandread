@@ -52,6 +52,27 @@ public class BranchServiceImpl implements BranchService {
         return mapToDto(branch);
     }
     
+    @Override
+    public Branch create(String name, String code) {
+        // Check if branch with same code already exists
+        branchRepository.findByCode(code.toUpperCase())
+            .ifPresent(existing -> {
+                throw new IllegalArgumentException("Branch with code '" + code + "' already exists");
+            });
+        
+        Branch branch = new Branch();
+        branch.setName(name.trim());
+        branch.setCode(code.trim().toUpperCase());
+        
+        return branchRepository.save(branch);
+    }
+
+    @Override
+    public BranchResponseDTO createBranch(String name, String code) {
+        Branch branch = create(name, code);
+        return mapToDto(branch);
+    }
+    
     private BranchResponseDTO mapToDto(Branch branch) {
         return new BranchResponseDTO(
                 branch.getId(),

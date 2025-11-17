@@ -38,11 +38,12 @@ BEGIN
 END $$;
 
 -- Foreign key: sub_branch_id → sub_branch(id)
+-- Note: Check for both possible constraint names to avoid duplicates
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_constraint 
-        WHERE conname = 'fk_subject_sub_branch'
+        WHERE conname IN ('fk_subject_sub_branch', 'fkf0qubpm4mc9lq0bn7059547rn')
     ) THEN
         ALTER TABLE subject
         ADD CONSTRAINT fk_subject_sub_branch

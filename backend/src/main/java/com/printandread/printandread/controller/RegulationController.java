@@ -1,8 +1,10 @@
 package com.printandread.printandread.controller;
 
+import com.printandread.printandread.dto.RegulationCreateRequest;
 import com.printandread.printandread.dto.RegulationResponseDTO;
 import com.printandread.printandread.service.RegulationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +49,22 @@ public class RegulationController {
     public ResponseEntity<RegulationResponseDTO> getRegulationByCode(@PathVariable String code) {
         RegulationResponseDTO regulation = regulationService.getRegulationDtoByCode(code);
         return ResponseEntity.ok(regulation);
+    }
+    
+    /**
+     * POST /api/regulations
+     * Create a new regulation
+     */
+    @PostMapping
+    public ResponseEntity<RegulationResponseDTO> createRegulation(@RequestBody RegulationCreateRequest request) {
+        RegulationResponseDTO regulation = regulationService.createRegulation(
+            request.getName(),
+            request.getCode(),
+            request.getStartYear(),
+            request.getEndYear(),
+            request.getDescription()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(regulation);
     }
 }
 

@@ -65,6 +65,12 @@ export interface Material {
   subjectId: number;
 }
 
+export interface Branch {
+  id: number;
+  name: string;
+  code: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -76,7 +82,7 @@ export class ApiService {
 
   // Phase 1 APIs (Legacy - kept for backward compatibility)
   getBranches() {
-    return this.http.get(`${this.base}/branches`);
+    return this.http.get<Branch[]>(`${this.base}/branches`);
   }
 
   getYears() {
@@ -93,6 +99,22 @@ export class ApiService {
 
   getMaterialById(id: number) {
     return this.http.get<Material>(`${this.base}/materials/${id}`);
+  }
+
+  // Get recent materials (for Home page)
+  getRecentMaterials(limit: number = 10) {
+    return this.http.get<Material[]>(`${this.base}/materials/recent?limit=${limit}`);
+  }
+
+  // Global search
+  search(query: string) {
+    return this.http.get<{
+      subjects: Subject[];
+      materials: Material[];
+      branches: Branch[];
+      regulations: Regulation[];
+      query: string;
+    }>(`${this.base}/search?q=${encodeURIComponent(query)}`);
   }
 
   // Phase 2 APIs - Regulation
@@ -152,5 +174,51 @@ export class ApiService {
   // Get subject by ID (for breadcrumbs and context)
   getSubjectById(id: number) {
     return this.http.get<Subject>(`${this.base}/subjects/${id}`);
+  }
+
+  // Admin APIs
+  getAllMaterials() {
+    return this.http.get<Material[]>(`${this.base}/materials`);
+  }
+
+  uploadMaterial(formData: FormData) {
+    return this.http.post<Material>(`${this.base}/materials/upload`, formData, {
+      reportProgress: true,
+    });
+  }
+
+  // Create Year
+  createYear(yearNumber: number) {
+    return this.http.post<any>(`${this.base}/years`, { yearNumber });
+  }
+
+  // Create Branch
+  createBranch(data: { name: string; code: string }) {
+    return this.http.post<Branch>(`${this.base}/branches`, data);
+  }
+
+  // Create Regulation
+  createRegulation(data: { name: string; code: string; startYear: number; endYear?: number; description?: string }) {
+    return this.http.post<Regulation>(`${this.base}/regulations`, data);
+  }
+
+  // Create Subject
+  createSubject(data: { name: string; code: string; branchId: number; regulationId: number; yearId: number; semesterId: number; subBranchId?: number }) {
+    return this.http.post<Subject>(`${this.base}/subjects`, data);
+  }
+
+  // Get all years
+  getAllYears() {
+    return this.http.get<any[]>(`${this.base}/years`);
+  }
+
+  // Get all regulations
+  getAllRegulations() {
+    return this.http.get<Regulation[]>(`${this.base}/regulations`);
+  }
+
+  // Get semesters by year
+  getSemestersByYear(yearId: number) {
+    return this.http.get<any[]>(`${this.base}/semesters/year/${yearId}`);
   }
 }

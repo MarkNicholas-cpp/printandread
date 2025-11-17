@@ -42,6 +42,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/viewer/viewer').then(m => m.Viewer)
   },
   {
+    path: 'search',
+    loadComponent: () => import('./pages/search/search').then(m => m.Search)
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin').then(m => m.Admin)
+  },
+  {
+    path: 'login',
+    redirectTo: '/home' // Placeholder - can be replaced with actual login component later
+  },
+  {
     path: '**',
     redirectTo: '/home'
   }

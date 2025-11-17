@@ -1,13 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { TitleCasePipe, DatePipe, UpperCasePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ApiService, Subject, Material } from '../../services/api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, Material } from '../../services/api';
+import { StateService } from '../../services/state.service';
+import { AccessTrackingService } from '../../services/access-tracking.service';
 import { BreadcrumbComponent, BreadcrumbSegment } from '../../components/breadcrumb/breadcrumb';
 import { BackButtonComponent } from '../../components/back-button/back-button';
+import { GridSkeletonComponent } from '../../components/skeleton/grid-skeleton/grid-skeleton';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-materials',
-  imports: [TitleCasePipe, DatePipe, UpperCasePipe, RouterLink, BreadcrumbComponent, BackButtonComponent],
+  imports: [TitleCasePipe, DatePipe, UpperCasePipe, BreadcrumbComponent, BackButtonComponent, GridSkeletonComponent, EmptyStateComponent],
   templateUrl: './materials.html',
   styleUrl: './materials.css',
 })
@@ -17,47 +22,35 @@ export class Materials implements OnInit {
   subjectId!: number;
   subject: Subject | null = null;
   loading = true;
+  error: string | null = null;
   breadcrumbs: BreadcrumbSegment[] = [];
 
   constructor(
-    private api: ApiService,
+    private state: StateService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private accessTracking: AccessTrackingService
   ) {}
 
   ngOnInit(): void {
     this.subjectId = Number(this.route.snapshot.paramMap.get('subjectId'));
 
-    // Fetch subject details for breadcrumbs and context
-    this.api.getSubjectById(this.subjectId).subscribe({
-      next: (subject) => {
+    // Load subject and materials from state (will use cache if available)
+    forkJoin({
+      subject: this.state.loadSubjectById(this.subjectId),
+      materials: this.state.loadMaterials(this.subjectId)
+    }).subscribe({
+      next: ({ subject, materials }) => {
         this.subject = subject;
+        this.materials = materials;
         this.buildBreadcrumbs(subject);
-        // Then fetch materials
-        this.api.getMaterials(this.subjectId).subscribe({
-          next: (materials) => {
-            this.materials = materials;
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('Error fetching materials:', err);
-            this.loading = false;
-          }
-        });
+        this.loading = false;
+        this.error = null;
       },
       error: (err) => {
-        console.error('Error fetching subject:', err);
-        // Still try to fetch materials even if subject fetch fails
-        this.api.getMaterials(this.subjectId).subscribe({
-          next: (materials) => {
-            this.materials = materials;
-            this.loading = false;
-          },
-          error: (err2) => {
-            console.error('Error fetching materials:', err2);
-            this.loading = false;
-          }
-        });
+        console.error('Error fetching data:', err);
+        this.error = 'Failed to load data. Please try again later.';
+        this.loading = false;
       }
     });
   }
@@ -85,6 +78,11 @@ export class Materials implements OnInit {
   }
 
   viewMaterial(material: Material) {
+    // Track access
+    this.accessTracking.trackAccess(material.id, material.title, 'material', {
+      subjectId: this.subjectId,
+      materialId: material.id
+    });
     this.router.navigate(['/viewer', material.id.toString()]);
   }
 

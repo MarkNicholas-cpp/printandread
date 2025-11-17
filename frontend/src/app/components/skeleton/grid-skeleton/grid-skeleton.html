@@ -1,0 +1,10 @@
+<div [class]="'grid ' + columns + ' gap-6'">
+  @for (item of getCountArray(); track item) {
+    <app-card-skeleton 
+      [lines]="lines" 
+      [showBadge]="showBadge" 
+      [showButton]="showButton"
+    ></app-card-skeleton>
+  }
+</div>
+

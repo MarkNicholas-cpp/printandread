@@ -2,8 +2,10 @@ package com.printandread.printandread.service.impl;
 
 import com.printandread.printandread.dto.SemesterResponseDTO;
 import com.printandread.printandread.entity.Semester;
+import com.printandread.printandread.entity.YearLevel;
 import com.printandread.printandread.exception.ResourceNotFoundException;
 import com.printandread.printandread.repository.SemesterRepository;
+import com.printandread.printandread.repository.YearLevelRepository;
 import com.printandread.printandread.service.SemesterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 public class SemesterServiceImpl implements SemesterService {
     
     private final SemesterRepository semesterRepository;
+    private final YearLevelRepository yearLevelRepository;
     
     @Autowired
-    public SemesterServiceImpl(SemesterRepository semesterRepository) {
+    public SemesterServiceImpl(SemesterRepository semesterRepository, YearLevelRepository yearLevelRepository) {
         this.semesterRepository = semesterRepository;
+        this.yearLevelRepository = yearLevelRepository;
     }
     
     @Override
@@ -80,6 +84,29 @@ public class SemesterServiceImpl implements SemesterService {
         return mapToDto(semester);
     }
     
+    @Override
+    public Semester create(Integer semNumber, Long yearId) {
+        // Check if semester already exists for this year
+        semesterRepository.findBySemNumberAndYearLevelId(semNumber, yearId).ifPresent(s -> {
+            throw new RuntimeException("Semester " + semNumber + " already exists for this year");
+        });
+        
+        @SuppressWarnings("null")
+        YearLevel yearLevel = yearLevelRepository.findById(yearId)
+            .orElseThrow(() -> new ResourceNotFoundException("YearLevel", yearId));
+        
+        Semester semester = new Semester();
+        semester.setSemNumber(semNumber);
+        semester.setYearLevel(yearLevel);
+        return semesterRepository.save(semester);
+    }
+
+    @Override
+    public SemesterResponseDTO createSemester(Integer semNumber, Long yearId) {
+        Semester semester = create(semNumber, yearId);
+        return mapToDto(semester);
+    }
+
     private SemesterResponseDTO mapToDto(Semester semester) {
         // Load lazy-loaded yearLevel relationship
         Long yearId = semester.getYearLevel().getId();

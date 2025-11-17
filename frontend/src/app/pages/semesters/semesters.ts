@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService, Semester, Regulation } from '../../services/api';
 import { BreadcrumbComponent, BreadcrumbSegment } from '../../components/breadcrumb/breadcrumb';
 import { BackButtonComponent } from '../../components/back-button/back-button';
+import { GridSkeletonComponent } from '../../components/skeleton/grid-skeleton/grid-skeleton';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 @Component({
   selector: 'app-semesters',
-  imports: [RouterLink, BreadcrumbComponent, BackButtonComponent],
+  imports: [BreadcrumbComponent, BackButtonComponent, GridSkeletonComponent, EmptyStateComponent],
   templateUrl: './semesters.html',
   styleUrl: './semesters.css',
 })

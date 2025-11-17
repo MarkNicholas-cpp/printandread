@@ -1,49 +1,300 @@
-<div class="w-full min-h-[70vh] flex items-center justify-center px-6 py-12 animate-fadeIn">
+<div class="w-full min-h-[70vh] px-6 md:px-12 py-12 animate-fadeIn">
 
-  <div class="max-w-3xl mx-auto text-center">
-
-
-
-    <!-- Title -->
-
-    <h1 class="text-4xl md:text-5xl font-semibold text-brand-primary mb-4 leading-tight">
-
-      Discover. Prepare. Succeed.
-
-    </h1>
-
-
-
-    <!-- Description -->
-
-    <p class="text-lg md:text-xl text-brand-charcoal mb-8">
-
-      Access well-organized study materials from multiple branches and years.  
-
-      Fast. Simple. Beautiful.
-
+  <!-- Hero Section with Search Bar -->
+  <div class="max-w-4xl mx-auto text-center mb-16">
+    <!-- Tagline -->
+    <p
+      class="tagline-text text-lg md:text-xl text-brand-slate mb-10 max-w-2xl mx-auto leading-relaxed font-light italic">
+      Your gateway to academic excellence — find notes, question papers, and study materials instantly
     </p>
 
+    <!-- Search Bar with Typing Animation - Enhanced Prominence -->
+    <div class="hero-search-container mb-8">
+      <app-search-bar (searchSubmit)="onSearch($event)"></app-search-bar>
+    </div>
 
-
-    <!-- CTA Button -->
-
-    <a
-
-      routerLink="/branches"
-
-      class="inline-block bg-brand-primary text-white px-8 py-3 rounded-lg shadow-md
-
-             hover:bg-opacity-90 hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
-
-    >
-
-      Browse Materials
-
-    </a>
-
-
-
+    <!-- Browse Materials CTA -->
+    <div class="flex items-center justify-center gap-4 flex-wrap">
+      <a routerLink="/branches" class="btn-primary inline-flex items-center gap-2 px-8 py-3 text-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        Browse Materials
+      </a>
+    </div>
   </div>
 
+  <!-- Quick Navigation Shortcuts (Frictionless Discovery - One-Click Access) -->
+  <div class="max-w-6xl mx-auto mb-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <button (click)="navigateToBranches()"
+        class="quick-nav-card bg-white rounded-xl p-6 text-center border-2 border-transparent hover:border-brand-primary transition-all duration-200 card-hover"
+        aria-label="Browse by Branch">
+        <svg class="w-8 h-8 mx-auto mb-2 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <div class="font-semibold text-brand-slate-dark text-sm">Browse Branches</div>
+      </button>
+      <a routerLink="/search"
+        class="quick-nav-card bg-white rounded-xl p-6 text-center border-2 border-transparent hover:border-brand-accent transition-all duration-200 card-hover"
+        aria-label="Search Materials">
+        <svg class="w-8 h-8 mx-auto mb-2 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <div class="font-semibold text-brand-slate-dark text-sm">Search Everything</div>
+      </a>
+      <a routerLink="/branches"
+        class="quick-nav-card bg-white rounded-xl p-6 text-center border-2 border-transparent hover:border-brand-success transition-all duration-200 card-hover"
+        aria-label="View All Subjects">
+        <svg class="w-8 h-8 mx-auto mb-2 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <div class="font-semibold text-brand-slate-dark text-sm">All Subjects</div>
+      </a>
+      <a routerLink="/home"
+        class="quick-nav-card bg-white rounded-xl p-6 text-center border-2 border-transparent hover:border-brand-warning transition-all duration-200 card-hover"
+        aria-label="Recent Updates">
+        <svg class="w-8 h-8 mx-auto mb-2 text-brand-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+        <div class="font-semibold text-brand-slate-dark text-sm">Latest Updates</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Continue Learning Section (Zeigarnik Effect - Unfinished Tasks) -->
+  @if (continueLearning) {
+  <div class="max-w-6xl mx-auto mb-12">
+    <div
+      class="bg-gradient-to-r from-brand-primary via-brand-accent to-brand-accent rounded-xl p-6 text-white shadow-lg">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex-1">
+          <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Continue Learning
+          </h3>
+          <p class="text-white/90 mb-1 font-semibold">{{ continueLearning.title }}</p>
+          <p class="text-white/80 text-sm">{{ continueLearning.subjectName }}</p>
+        </div>
+        <button (click)="navigateToMaterial(continueLearning)"
+          class="bg-white text-brand-primary px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all min-h-[44px]"
+          aria-label="Continue reading {{ continueLearning.title }}">
+          Continue →
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Frequently Accessed Section -->
+  @if (!loadingFrequentlyAccessed && (frequentlyAccessedMaterials.length > 0 || frequentlyAccessedBranches.length > 0 ||
+  frequentlyAccessedRegulations.length > 0 || frequentlyAccessedSubjects.length > 0)) {
+  <div class="max-w-6xl mx-auto mb-12">
+    <h2 class="page-title mb-6 flex items-center gap-2">
+      <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      Frequently Accessed
+    </h2>
+
+    <!-- Frequently Accessed Materials -->
+    @if (frequentlyAccessedMaterials.length > 0) {
+    <div class="mb-8">
+      <h3 class="section-title mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Materials
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (material of frequentlyAccessedMaterials; track material.id) {
+        <div (click)="navigateToMaterial(material)"
+          class="card-hover rounded-xl bg-white p-4 cursor-pointer border border-transparent">
+          <h4 class="font-semibold text-brand-slate-dark text-sm mb-1 line-clamp-2">{{ material.title }}</h4>
+          <p class="text-xs text-brand-accent mb-2">{{ material.subjectName }}</p>
+          <span class="badge-accent text-xs">{{ material.materialType | titlecase }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Frequently Accessed Items Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Frequently Accessed Branches -->
+      @if (frequentlyAccessedBranches.length > 0) {
+      <div>
+        <h3 class="section-title mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          Branches
+        </h3>
+        <div class="space-y-2">
+          @for (branch of frequentlyAccessedBranches; track branch.id) {
+          <div (click)="navigateToFrequentlyAccessedBranch(branch)"
+            (keydown.enter)="navigateToFrequentlyAccessedBranch(branch)"
+            (keydown.space)="navigateToFrequentlyAccessedBranch(branch)"
+            class="card-hover rounded-lg bg-white p-3 cursor-pointer border border-transparent" role="button"
+            tabindex="0">
+            <div class="flex items-center justify-between">
+              <span class="font-medium text-sm text-brand-slate-dark">{{ branch.name }}</span>
+              <span class="text-xs text-brand-slate">{{ branch.accessCount }}x</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Frequently Accessed Regulations -->
+      @if (frequentlyAccessedRegulations.length > 0) {
+      <div>
+        <h3 class="section-title mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Regulations
+        </h3>
+        <div class="space-y-2">
+          @for (regulation of frequentlyAccessedRegulations; track regulation.id) {
+          <div (click)="navigateToFrequentlyAccessedRegulation(regulation)"
+            (keydown.enter)="navigateToFrequentlyAccessedRegulation(regulation)"
+            (keydown.space)="navigateToFrequentlyAccessedRegulation(regulation)"
+            class="card-hover rounded-lg bg-white p-3 cursor-pointer border border-transparent" role="button"
+            tabindex="0">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-medium text-sm text-brand-slate-dark">{{ regulation.name }}</span>
+                @if (regulation.metadata?.code) {
+                <span class="text-xs text-brand-slate block">{{ regulation.metadata?.code }}</span>
+                }
+              </div>
+              <span class="text-xs text-brand-slate">{{ regulation.accessCount }}x</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Frequently Accessed Subjects -->
+      @if (frequentlyAccessedSubjects.length > 0) {
+      <div>
+        <h3 class="section-title mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          Subjects
+        </h3>
+        <div class="space-y-2">
+          @for (subject of frequentlyAccessedSubjects; track subject.id) {
+          <div (click)="navigateToFrequentlyAccessedSubject(subject)"
+            (keydown.enter)="navigateToFrequentlyAccessedSubject(subject)"
+            (keydown.space)="navigateToFrequentlyAccessedSubject(subject)"
+            class="card-hover rounded-lg bg-white p-3 cursor-pointer border border-transparent" role="button"
+            tabindex="0">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-medium text-sm text-brand-slate-dark line-clamp-1">{{ subject.name }}</span>
+                @if (subject.metadata?.code) {
+                <span class="text-xs text-brand-slate block">{{ subject.metadata?.code }}</span>
+                }
+              </div>
+              <span class="text-xs text-brand-slate">{{ subject.accessCount }}x</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Recent Uploads Section (Freshness Psychology) -->
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="page-title mb-0 flex items-center gap-2">
+        <svg class="w-6 h-6 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+        Recent Uploads
+      </h2>
+      @if (!loading && recentMaterials.length > 0) {
+      <span class="text-sm text-brand-charcoal">
+        {{ recentMaterials.length }} {{ recentMaterials.length === 1 ? 'material' : 'materials' }}
+      </span>
+      }
+    </div>
+
+    <!-- Loading Skeleton -->
+    @if (loading) {
+    <app-grid-skeleton [count]="6" columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" [lines]="2" [showBadge]="true"
+      [showButton]="false"></app-grid-skeleton>
+    }
+
+    <!-- Recent Materials Grid -->
+    @if (!loading) {
+    @if (recentMaterials.length === 0) {
+    <div class="text-center py-12">
+      <p class="text-brand-charcoal text-lg">
+        No materials uploaded yet. Check back later!
+      </p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (material of recentMaterials; track material.id) {
+      <div (click)="navigateToMaterial(material)"
+        class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent">
+        <!-- Material Title -->
+        <h3 class="section-title">
+          {{ material.title }}
+        </h3>
+
+        <!-- Subject Name -->
+        <p class="text-brand-accent text-sm font-semibold mb-2">
+          {{ material.subjectName }}
+        </p>
+
+        <!-- Badge and Time -->
+        <div class="flex items-center justify-between mb-3">
+          <span class="badge-accent">
+            {{ material.materialType | titlecase }}
+          </span>
+          <span class="text-xs text-brand-charcoal">
+            {{ getTimeAgo(material.uploadedOn) }}
+          </span>
+        </div>
+
+        <!-- View Link -->
+        <div class="flex items-center gap-2 text-sm text-brand-primary mt-4">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          <span class="font-medium">View Material</span>
+        </div>
+      </div>
+      }
+    </div>
+    }
+    }
+  </div>
 </div>

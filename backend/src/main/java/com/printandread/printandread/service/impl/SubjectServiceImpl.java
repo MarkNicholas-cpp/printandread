@@ -1,10 +1,9 @@
 package com.printandread.printandread.service.impl;
 
 import com.printandread.printandread.dto.SubjectResponseDTO;
-import com.printandread.printandread.entity.Subject;
+import com.printandread.printandread.entity.*;
 import com.printandread.printandread.exception.ResourceNotFoundException;
-import com.printandread.printandread.repository.MaterialRepository;
-import com.printandread.printandread.repository.SubjectRepository;
+import com.printandread.printandread.repository.*;
 import com.printandread.printandread.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,28 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
     private final MaterialRepository materialRepository;
+    private final BranchRepository branchRepository;
+    private final RegulationRepository regulationRepository;
+    private final YearLevelRepository yearLevelRepository;
+    private final SemesterRepository semesterRepository;
+    private final SubBranchRepository subBranchRepository;
 
     @Autowired
-    public SubjectServiceImpl(SubjectRepository subjectRepository, MaterialRepository materialRepository) {
+    public SubjectServiceImpl(
+            SubjectRepository subjectRepository,
+            MaterialRepository materialRepository,
+            BranchRepository branchRepository,
+            RegulationRepository regulationRepository,
+            YearLevelRepository yearLevelRepository,
+            SemesterRepository semesterRepository,
+            SubBranchRepository subBranchRepository) {
         this.subjectRepository = subjectRepository;
         this.materialRepository = materialRepository;
+        this.branchRepository = branchRepository;
+        this.regulationRepository = regulationRepository;
+        this.yearLevelRepository = yearLevelRepository;
+        this.semesterRepository = semesterRepository;
+        this.subBranchRepository = subBranchRepository;
     }
 
     @Override
@@ -83,6 +99,40 @@ public class SubjectServiceImpl implements SubjectService {
     @Transactional(readOnly = true)
     public SubjectResponseDTO getSubjectDtoById(Long id) {
         Subject subject = findById(id);
+        return mapToDto(subject);
+    }
+
+    @Override
+    public Subject create(String name, String code, Long branchId, Long regulationId, Long yearId, Long semesterId, Long subBranchId) {
+        Branch branch = branchRepository.findById(branchId)
+            .orElseThrow(() -> new ResourceNotFoundException("Branch", branchId));
+        Regulation regulation = regulationRepository.findById(regulationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Regulation", regulationId));
+        YearLevel yearLevel = yearLevelRepository.findById(yearId)
+            .orElseThrow(() -> new ResourceNotFoundException("YearLevel", yearId));
+        Semester semester = semesterRepository.findById(semesterId)
+            .orElseThrow(() -> new ResourceNotFoundException("Semester", semesterId));
+        
+        Subject subject = new Subject();
+        subject.setName(name);
+        subject.setCode(code);
+        subject.setBranch(branch);
+        subject.setRegulation(regulation);
+        subject.setYearLevel(yearLevel);
+        subject.setSemester(semester);
+        
+        if (subBranchId != null) {
+            SubBranch subBranch = subBranchRepository.findById(subBranchId)
+                .orElseThrow(() -> new ResourceNotFoundException("SubBranch", subBranchId));
+            subject.setSubBranch(subBranch);
+        }
+        
+        return subjectRepository.save(subject);
+    }
+
+    @Override
+    public SubjectResponseDTO createSubject(String name, String code, Long branchId, Long regulationId, Long yearId, Long semesterId, Long subBranchId) {
+        Subject subject = create(name, code, branchId, regulationId, yearId, semesterId, subBranchId);
         return mapToDto(subject);
     }
 

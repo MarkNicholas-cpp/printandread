@@ -1,0 +1,57 @@
+services:
+  # PostgreSQL Database
+  - type: pspg
+    name: printandread-db
+    plan: free  # Free for 90 days, then $7/month
+    databaseName: printandread
+    user: printandread_user
+    region: singapore
+
+  # Backend Web Service
+  - type: web
+    name: printandread-backend
+    runtime: java
+    plan: free  # Free tier (spins down after 15 min inactivity)
+    region: singapore
+    rootDirectory: backend
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/printandread-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: printandread-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: printandread-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: printandread-db
+          property: password
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false  # Set manually in Render dashboard
+      - key: CLOUDINARY_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: CLOUDINARY_API_SECRET
+        sync: false  # Set manually in Render dashboard
+      - key: PORT
+        value: 8080
+      - key: FRONTEND_URL
+        fromService:
+          name: printandread-frontend
+          type: web
+          property: host
+    healthCheckPath: /api/health
+
+  # Frontend Static Site
+  - type: web
+    name: printandread-frontend
+    runtime: static
+    region: singapore
+    rootDirectory: frontend
+    buildCommand: npm install && npm run build -- --configuration=production
+    staticPublishPath: dist/printandread/browser
+

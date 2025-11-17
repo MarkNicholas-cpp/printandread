@@ -12,16 +12,35 @@
     <app-back-button></app-back-button>
   </div>
 
-  <!-- Loading Material Info -->
+  <!-- Loading skeleton -->
   @if (loading) {
-    <div class="flex flex-col items-center justify-center min-h-[60vh]">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mb-4"></div>
-      <p class="text-brand-charcoal">Loading material...</p>
+    <app-viewer-skeleton></app-viewer-skeleton>
+  }
+
+  <!-- Error State -->
+  @if (!loading && error) {
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6" role="alert" aria-live="polite">
+      <div class="flex items-start gap-3">
+        <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <h3 class="text-lg font-semibold text-red-800 mb-1">Error Loading Material</h3>
+          <p class="text-red-700">{{ error }}</p>
+          <button
+            (click)="ngOnInit()"
+            class="mt-4 btn-primary bg-red-600 hover:bg-red-700"
+            aria-label="Retry loading material"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
     </div>
   }
 
   <!-- PDF Viewer -->
-  @if (!loading && material) {
+  @if (!loading && material && !error) {
 
     <!-- Subject Context Bar -->
     @if (subject) {
@@ -45,7 +64,7 @@
     }
 
     <!-- Title -->
-    <h2 class="text-3xl font-semibold text-brand-primary mb-2">
+    <h2 class="page-title mb-2">
       {{ material.title }}
     </h2>
 
@@ -68,7 +87,7 @@
 
   <!-- PDF Viewer -->
 
-  <div class="w-full h-[85vh] bg-white rounded-xl shadow overflow-hidden flex flex-col">
+  <div class="w-full h-[60vh] md:h-[85vh] bg-white rounded-xl shadow overflow-hidden flex flex-col" role="region" aria-label="PDF Viewer">
 
     <!-- Action Bar -->
     <div class="flex justify-between items-center p-4 border-b bg-gray-50">
@@ -85,7 +104,9 @@
         [src]="material.cloudinaryUrl | safeUrl"
         class="w-full h-full rounded-b-xl"
         style="border:none;"
-        title="PDF Viewer"
+        [title]="'PDF Viewer: ' + material.title"
+        aria-label="PDF document viewer"
+        loading="lazy"
       ></iframe>
     </div>
 

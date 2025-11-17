@@ -1,8 +1,10 @@
 package com.printandread.printandread.controller;
 
+import com.printandread.printandread.dto.SemesterCreateRequest;
 import com.printandread.printandread.dto.SemesterResponseDTO;
 import com.printandread.printandread.service.SemesterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +39,16 @@ public class SemesterController {
     public ResponseEntity<List<SemesterResponseDTO>> getSemestersByYearNumber(@PathVariable Integer yearNumber) {
         List<SemesterResponseDTO> semesters = semesterService.getSemesterDtosByYearNumber(yearNumber);
         return ResponseEntity.ok(semesters);
+    }
+    
+    /**
+     * POST /api/semesters
+     * Create a new semester
+     */
+    @PostMapping
+    public ResponseEntity<SemesterResponseDTO> createSemester(@RequestBody SemesterCreateRequest request) {
+        SemesterResponseDTO semester = semesterService.createSemester(request.getSemNumber(), request.getYearId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(semester);
     }
 }
 

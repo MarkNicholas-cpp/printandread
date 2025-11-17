@@ -11,8 +11,10 @@ import java.util.List;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     List<Material> findBySubjectId(Long subjectId);
-    
+
     @Query("SELECT COUNT(m) FROM Material m WHERE m.subject.id = :subjectId")
     long countBySubjectId(@Param("subjectId") Long subjectId);
-}
 
+    @Query("SELECT m FROM Material m ORDER BY m.uploadedOn DESC")
+    List<Material> findAllOrderByUploadedOnDesc();
+}

@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ApiService, Regulation } from '../../services/api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Regulation } from '../../services/api';
+import { StateService } from '../../services/state.service';
+import { AccessTrackingService } from '../../services/access-tracking.service';
 import { BreadcrumbComponent, BreadcrumbSegment } from '../../components/breadcrumb/breadcrumb';
 import { BackButtonComponent } from '../../components/back-button/back-button';
+import { GridSkeletonComponent } from '../../components/skeleton/grid-skeleton/grid-skeleton';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 @Component({
   selector: 'app-regulations',
-  imports: [RouterLink, BreadcrumbComponent, BackButtonComponent],
+  imports: [BreadcrumbComponent, BackButtonComponent, GridSkeletonComponent, EmptyStateComponent],
   templateUrl: './regulations.html',
   styleUrl: './regulations.css',
 })
@@ -19,23 +23,25 @@ export class Regulations implements OnInit {
   breadcrumbs: BreadcrumbSegment[] = [];
 
   constructor(
-    private api: ApiService,
+    private state: StateService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private accessTracking: AccessTrackingService
+  ) { }
 
   ngOnInit(): void {
     this.branchId = Number(this.route.snapshot.paramMap.get('branchId'));
 
-    // Fetch branch info for breadcrumbs
-    this.api.getBranches().subscribe({
+    // Fetch branch info for breadcrumbs from state
+    this.state.loadBranches().subscribe({
       next: (branches: any) => {
         this.branch = branches.find((b: any) => b.id === this.branchId);
         this.buildBreadcrumbs();
       }
     });
 
-    this.api.getRegulations().subscribe({
+    // Load regulations from state (will use cache if available)
+    this.state.loadRegulations().subscribe({
       next: (regulations) => {
         this.regulations = regulations;
         this.loading = false;
@@ -55,6 +61,12 @@ export class Regulations implements OnInit {
   }
 
   goToRegulation(regulation: Regulation) {
+    // Track access
+    this.accessTracking.trackAccess(regulation.id, regulation.name, 'regulation', {
+      branchId: this.branchId,
+      regulationId: regulation.id,
+      code: regulation.code
+    });
     // Navigate to Years page with branchId and regulationId
     this.router.navigate(['/years', this.branchId, regulation.id]);
   }

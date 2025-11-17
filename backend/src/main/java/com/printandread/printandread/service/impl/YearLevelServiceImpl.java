@@ -60,6 +60,27 @@ public class YearLevelServiceImpl implements YearLevelService {
         return mapToDto(yearLevel);
     }
     
+    @Override
+    public YearLevel create(Integer yearNumber) {
+        // Check if year already exists
+        yearLevelRepository.findAll().stream()
+            .filter(y -> y.getYearNumber().equals(yearNumber))
+            .findFirst()
+            .ifPresent(y -> {
+                throw new RuntimeException("Year " + yearNumber + " already exists");
+            });
+        
+        YearLevel yearLevel = new YearLevel();
+        yearLevel.setYearNumber(yearNumber);
+        return yearLevelRepository.save(yearLevel);
+    }
+
+    @Override
+    public YearLevelDTO createYear(Integer yearNumber) {
+        YearLevel yearLevel = create(yearNumber);
+        return mapToDto(yearLevel);
+    }
+
     private YearLevelDTO mapToDto(YearLevel yearLevel) {
         return new YearLevelDTO(
                 yearLevel.getId(),

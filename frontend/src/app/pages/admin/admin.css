@@ -1,0 +1,25 @@
+/* Admin Dashboard Specific Styles */
+.admin-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Custom scrollbar for recent uploads */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #7678ED;
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #3D348B;
+}
+

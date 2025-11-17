@@ -1,0 +1,608 @@
+<div class="admin-dashboard px-6 md:px-12 py-10 animate-fadeIn">
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-brand-slate-dark mb-2"
+            style="font-family: 'Montserrat', 'Poppins', sans-serif;">
+            Admin Dashboard
+        </h1>
+        <p class="text-brand-slate">Upload and manage study materials</p>
+    </div>
+
+    <!-- Success Message -->
+    @if (success) {
+    <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3" role="alert">
+        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-green-800 font-medium">{{ success }}</p>
+    </div>
+    }
+
+    <!-- Error Message -->
+    @if (error) {
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3" role="alert">
+        <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-red-800 font-medium">{{ error }}</p>
+    </div>
+    }
+
+    <!-- Tab Navigation -->
+    <div class="mb-6 border-b border-gray-200">
+        <nav class="flex space-x-1 overflow-x-auto">
+            <button
+                (click)="setActiveTab('upload')"
+                [class.bg-brand-primary]="activeTab === 'upload'"
+                [class.text-white]="activeTab === 'upload'"
+                [class.text-brand-slate-dark]="activeTab !== 'upload'"
+                class="px-6 py-3 font-semibold rounded-t-lg transition-colors whitespace-nowrap"
+            >
+                Upload Material
+            </button>
+            <button
+                (click)="setActiveTab('branch')"
+                [class.bg-brand-primary]="activeTab === 'branch'"
+                [class.text-white]="activeTab === 'branch'"
+                [class.text-brand-slate-dark]="activeTab !== 'branch'"
+                class="px-6 py-3 font-semibold rounded-t-lg transition-colors whitespace-nowrap"
+            >
+                Create Branch
+            </button>
+            <button
+                (click)="setActiveTab('regulation')"
+                [class.bg-brand-primary]="activeTab === 'regulation'"
+                [class.text-white]="activeTab === 'regulation'"
+                [class.text-brand-slate-dark]="activeTab !== 'regulation'"
+                class="px-6 py-3 font-semibold rounded-t-lg transition-colors whitespace-nowrap"
+            >
+                Create Regulation
+            </button>
+            <button
+                (click)="setActiveTab('subject')"
+                [class.bg-brand-primary]="activeTab === 'subject'"
+                [class.text-white]="activeTab === 'subject'"
+                [class.text-brand-slate-dark]="activeTab !== 'subject'"
+                class="px-6 py-3 font-semibold rounded-t-lg transition-colors whitespace-nowrap"
+            >
+                Create Subject
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Content -->
+    @if (activeTab === 'upload') {
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Upload Form (Left Column - 2/3 width on large screens) -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-soft p-6">
+                <h2 class="text-2xl font-bold text-brand-slate-dark mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    Upload New Material
+                </h2>
+
+                <form (ngSubmit)="uploadMaterial()" class="space-y-6">
+
+                    <!-- Subject Selector -->
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Subject <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" [(ngModel)]="subjectSearchQuery" (focus)="showSubjectDropdown = true"
+                                (input)="onSubjectSearch()" placeholder="Search for subject..."
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                                [ngModelOptions]="{standalone: true}" />
+                            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-slate"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+
+                            <!-- Dropdown -->
+                            @if (showSubjectDropdown && filteredSubjects.length > 0) {
+                            <div
+                                class="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                @for (subject of filteredSubjects; track subject.id) {
+                                <button type="button" (click)="selectSubject(subject)"
+                                    class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+                                    <div class="font-semibold text-brand-slate-dark">{{ subject.name }}</div>
+                                    <div class="text-sm text-brand-slate">
+                                        {{ subject.code }} • {{ subject.branchCode }} • {{ subject.semesterDisplayName
+                                        }}
+                                    </div>
+                                </button>
+                                }
+                            </div>
+                            }
+                        </div>
+                        @if (selectedSubjectId) {
+                        <p class="mt-2 text-sm text-brand-accent font-medium">
+                            Selected: {{ getSelectedSubjectName() }}
+                        </p>
+                        }
+                    </div>
+
+                    <!-- Material Type -->
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Material Type <span class="text-red-500">*</span>
+                        </label>
+                        <select [(ngModel)]="materialType"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}">
+                            @for (type of materialTypes; track type.value) {
+                            <option [value]="type.value">{{ type.label }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Title <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" [(ngModel)]="title" placeholder="e.g., Unit 1 Notes, Midterm Question Paper"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}" required />
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            PDF File <span class="text-red-500">*</span>
+                        </label>
+
+                        @if (!selectedFile) {
+                        <!-- Drop Zone -->
+                        <div (dragover)="onDragOver($event)" (drop)="onFileDrop($event)"
+                            class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-brand-accent transition-colors cursor-pointer"
+                            (click)="onDropZoneClick()">
+                            <svg class="w-12 h-12 mx-auto mb-4 text-brand-slate" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <p class="text-brand-slate-dark font-medium mb-1">Drag & drop PDF file here</p>
+                            <p class="text-sm text-brand-slate">or click to browse</p>
+                            <input id="file-input" type="file" accept=".pdf,application/pdf"
+                                (change)="onFileSelected($event)" class="hidden" />
+                        </div>
+                        } @else {
+                        <!-- File Selected -->
+                        <div
+                            class="border-2 border-brand-accent rounded-lg p-4 bg-brand-accent bg-opacity-5 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-8 h-8 text-brand-accent" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                <div>
+                                    <p class="font-semibold text-brand-slate-dark">{{ fileName }}</p>
+                                    <p class="text-sm text-brand-slate">
+                                        @if (selectedFile) {
+                                          {{ (selectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB
+                                        } @else {
+                                          0 MB
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" (click)="removeFile()"
+                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                aria-label="Remove file">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Upload Progress -->
+                    @if (uploading) {
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm text-brand-slate-dark">
+                            <span>Uploading...</span>
+                            <span>{{ uploadProgress }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-brand-primary to-brand-accent h-2.5 rounded-full transition-all duration-300"
+                                [style.width.%]="uploadProgress"></div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Submit Button -->
+                    <button type="submit" [disabled]="uploading || !selectedSubjectId || !title.trim() || !selectedFile"
+                        class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                        @if (uploading) {
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Uploading...
+                        </span>
+                        } @else {
+                        Upload Material
+                        }
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Uploads Sidebar (Right Column) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-soft p-6 sticky top-24">
+                <h3 class="text-xl font-bold text-brand-slate-dark mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Recent Uploads
+                </h3>
+
+                @if (uploadedMaterials.length === 0) {
+                <p class="text-brand-slate text-sm">No materials uploaded yet.</p>
+                } @else {
+                <div class="space-y-3 max-h-[600px] overflow-y-auto">
+                    @for (material of uploadedMaterials.slice(0, 10); track material.id) {
+                    <div class="p-3 border border-gray-200 rounded-lg hover:border-brand-accent transition-colors">
+                        <h4 class="font-semibold text-brand-slate-dark text-sm mb-1 line-clamp-1">
+                            {{ material.title }}
+                        </h4>
+                        <p class="text-xs text-brand-slate mb-2">{{ material.subjectName }}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="badge-accent text-xs">{{ material.materialType | titlecase }}</span>
+                            <span class="text-xs text-brand-slate">{{ material.uploadedOn | date: 'shortDate' }}</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Create Branch Tab -->
+    @if (activeTab === 'branch') {
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <h2 class="text-2xl font-bold text-brand-slate-dark mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Create New Branch
+            </h2>
+
+            <form (ngSubmit)="createBranch()" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Branch Name <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        [(ngModel)]="branchName"
+                        placeholder="e.g., Computer Science and Engineering"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Branch Code <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        [(ngModel)]="branchCode"
+                        placeholder="e.g., CSE"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors uppercase"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                        maxlength="20"
+                    />
+                    <p class="text-xs text-brand-slate mt-1">Code will be automatically converted to uppercase</p>
+                </div>
+                <button
+                    type="submit"
+                    [disabled]="creating || !branchName.trim() || !branchCode.trim()"
+                    class="w-full btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    @if (creating) {
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Creating...
+                    </span>
+                    } @else {
+                    Create Branch
+                    }
+                </button>
+            </form>
+        </div>
+    </div>
+    }
+
+    <!-- Create Regulation Tab -->
+    @if (activeTab === 'regulation') {
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <h2 class="text-2xl font-bold text-brand-slate-dark mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Create New Regulation
+            </h2>
+            <form (ngSubmit)="createRegulation()" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        [(ngModel)]="regulationName"
+                        placeholder="e.g., Regulation 2022"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Code <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        [(ngModel)]="regulationCode"
+                        placeholder="e.g., R22"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors uppercase"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Start Year <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            [(ngModel)]="regulationStartYear"
+                            placeholder="2022"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            End Year
+                        </label>
+                        <input
+                            type="number"
+                            [(ngModel)]="regulationEndYear"
+                            placeholder="Optional"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Description
+                    </label>
+                    <textarea
+                        [(ngModel)]="regulationDescription"
+                        placeholder="Optional description"
+                        rows="3"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                    ></textarea>
+                </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            <strong>Note:</strong> Creating a regulation will automatically create Years 1-4 and Semesters (2 per year: Year 1→Sem 1,2; Year 2→Sem 3,4; Year 3→Sem 5,6; Year 4→Sem 7,8) if they don't already exist.
+                        </p>
+                    </div>
+                <button
+                    type="submit"
+                    [disabled]="creating || !regulationName.trim() || !regulationCode.trim() || !regulationStartYear"
+                    class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    @if (creating) {
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating...
+                        </span>
+                    } @else {
+                        Create Regulation
+                    }
+                </button>
+            </form>
+        </div>
+    </div>
+    }
+
+    <!-- Create Subject Tab -->
+    @if (activeTab === 'subject') {
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <h2 class="text-2xl font-bold text-brand-slate-dark mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Create New Subject
+            </h2>
+            <form (ngSubmit)="createSubject()" class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Subject Name <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            [(ngModel)]="subjectName"
+                            placeholder="e.g., Database Management Systems"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                            Subject Code <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            [(ngModel)]="subjectCode"
+                            placeholder="e.g., CS301"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors uppercase"
+                            [ngModelOptions]="{standalone: true}"
+                            required
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Branch <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        [(ngModel)]="subjectBranchId"
+                        (change)="onSubjectBranchChange()"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    >
+                        <option value="">Select Branch</option>
+                        @for (branch of branches; track branch.id) {
+                            <option [value]="branch.id">{{ branch.name }} ({{ branch.code }})</option>
+                        }
+                    </select>
+                </div>
+                @if (subjectBranchId && subBranches.length > 0) {
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Sub-Branch (Optional)
+                    </label>
+                    <select
+                        [(ngModel)]="subjectSubBranchId"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                    >
+                        <option [value]="null">None</option>
+                        @for (subBranch of subBranches; track subBranch.id) {
+                            <option [value]="subBranch.id">{{ subBranch.name }} ({{ subBranch.code }})</option>
+                        }
+                    </select>
+                </div>
+                }
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Regulation <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        [(ngModel)]="subjectRegulationId"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    >
+                        <option value="">Select Regulation</option>
+                        @for (regulation of regulations; track regulation.id) {
+                            <option [value]="regulation.id">{{ regulation.name }} ({{ regulation.code }})</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Year <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        [(ngModel)]="subjectYearId"
+                        (change)="onYearSelected($event)"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                    >
+                        <option [value]="null">Select Year</option>
+                        @for (year of years; track year.id) {
+                            <option [value]="year.id">Year {{ year.yearNumber }}</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-brand-slate-dark mb-2">
+                        Semester <span class="text-red-500">*</span>
+                    </label>
+                    @if (!subjectYearId) {
+                        <select
+                            disabled
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed"
+                        >
+                            <option>Please select Year first</option>
+                        </select>
+                    } @else if (semesters.length === 0) {
+                        <select
+                            disabled
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed"
+                        >
+                            <option>Loading semesters...</option>
+                        </select>
+                    } @else {
+                        <select
+                            [(ngModel)]="subjectSemesterId"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-primary focus:outline-none transition-colors"
+                            [ngModelOptions]="{standalone: true}"
+                            required
+                        >
+                            <option value="">Select Semester</option>
+                            @for (semester of semesters; track semester.id) {
+                                <option [value]="semester.id">{{ semester.semesterDisplayName }}</option>
+                            }
+                        </select>
+                    }
+                </div>
+                <button
+                    type="submit"
+                    [disabled]="creating || !subjectName.trim() || !subjectCode.trim() || !subjectBranchId || !subjectRegulationId || !subjectYearId || !subjectSemesterId"
+                    class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    @if (creating) {
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating...
+                        </span>
+                    } @else {
+                        Create Subject
+                    }
+                </button>
+            </form>
+        </div>
+    </div>
+    }
+</div>

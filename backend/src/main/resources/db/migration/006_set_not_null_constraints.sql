@@ -40,29 +40,10 @@ BEGIN
     END IF;
 END $$;
 
--- Step 3: Set semester_id to NOT NULL
-DO $$
-BEGIN
-    -- Check if constraint already exists
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'subject_semester_id_not_null'
-    ) THEN
-        -- First, ensure no NULLs exist
-        IF EXISTS (SELECT 1 FROM subject WHERE semester_id IS NULL) THEN
-            RAISE EXCEPTION 'Cannot set NOT NULL: Some subjects have NULL semester_id. Run Migration 5 first.';
-        END IF;
-        
-        -- Set NOT NULL constraint
-        ALTER TABLE subject 
-        ALTER COLUMN semester_id SET NOT NULL;
-        
-        -- Add constraint name for documentation
-        ALTER TABLE subject 
-        ADD CONSTRAINT subject_semester_id_not_null 
-        CHECK (semester_id IS NOT NULL);
-    END IF;
-END $$;
+-- Step 3: semester_id remains nullable (optional field)
+-- Note: Based on current database state, semester_id is nullable
+-- This allows flexibility for subjects that may not have a semester assigned yet
+-- No action needed - this field is intentionally nullable
 
 -- Step 4: sub_branch_id remains nullable (optional field)
 -- No action needed - this field is intentionally nullable

@@ -12,47 +12,43 @@
   </div>
 
   <!-- Title -->
-  <h2 class="text-3xl font-semibold text-brand-primary mb-3">
+  <h2 class="page-title">
     Choose Semester
   </h2>
 
   <!-- Description -->
-  <p class="text-brand-charcoal mb-8 text-lg">
+  <p class="page-description">
     Select the semester to view available subjects.
   </p>
 
-  <!-- Loading -->
+  <!-- Loading skeleton -->
   @if (loading) {
-    <p class="text-brand-charcoal">Loading semesters...</p>
+    <app-grid-skeleton 
+      [count]="8" 
+      columns="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+      [lines]="1"
+      [showBadge]="false"
+      [showButton]="false"
+    ></app-grid-skeleton>
   }
 
   <!-- Semesters Grid -->
   @if (!loading) {
     @if (semesters.length === 0) {
-      <!-- Empty State -->
-      <div class="flex flex-col items-center justify-center py-16 px-6">
-        <svg class="h-24 w-24 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <h3 class="text-xl font-semibold text-brand-charcoal mb-2">No Semesters Available</h3>
-        <p class="text-brand-charcoal text-center max-w-md mb-6">
-          No semesters are available for this year. Please try another year.
-        </p>
-        <a
-          routerLink="/branches"
-          class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition"
-        >
-          Back to Branches
-        </a>
-      </div>
+      <app-empty-state
+        icon="calendar"
+        title="No Semesters Available"
+        message="No semesters are available for this year level. Please try another year or check back later."
+        [showAction]="true"
+        actionLabel="Back to Branches"
+        [actionRoute]="['/branches']"
+      ></app-empty-state>
     } @else {
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         @for (sem of semesters; track sem.id) {
           <div
             (click)="goToSemester(sem)"
-            class="rounded-xl shadow-sm bg-white p-6 cursor-pointer border border-transparent
-                   hover:border-brand-primary hover:shadow-xl hover:-translate-y-1
-                   transition-all duration-200 text-center"
+            class="card-hover rounded-xl bg-white p-6 cursor-pointer border border-transparent text-center"
           >
             <!-- Semester Number (Large) -->
             <div class="text-4xl font-bold text-brand-primary mb-2">
