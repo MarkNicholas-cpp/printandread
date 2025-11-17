@@ -5,12 +5,12 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copy pom.xml and download dependencies (cached layer)
-# Build context is repo root, so we need backend/ prefix
-COPY backend/pom.xml .
+# Build context is backend folder, so paths are relative to backend/
+COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 # Copy source code
-COPY backend/src ./src
+COPY src ./src
 
 # Build the application
 RUN mvn clean package -DskipTests
