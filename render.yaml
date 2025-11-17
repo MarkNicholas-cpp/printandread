@@ -10,12 +10,11 @@ services:
   # Backend Web Service
   - type: web
     name: printandread-backend
-    runtime: java
+    runtime: docker  # Using Docker for Java/Spring Boot
     plan: free  # Free tier (spins down after 15 min inactivity)
     region: singapore
     rootDirectory: backend
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/printandread-0.0.1-SNAPSHOT.jar
+    # Docker handles build and start commands automatically via Dockerfile
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production
