@@ -13,8 +13,8 @@ services:
     runtime: docker  # Using Docker for Java/Spring Boot
     plan: free  # Free tier (spins down after 15 min inactivity)
     region: singapore
-    rootDirectory: backend  # Set build context to backend folder
-    # Dockerfile path will be relative to rootDirectory (just "Dockerfile")
+    dockerfilePath: backend/Dockerfile  # Explicit path from repo root
+    # No rootDirectory - build context is repo root, Dockerfile specifies backend path
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production
