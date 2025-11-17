@@ -13,7 +13,7 @@ services:
     runtime: docker  # Using Docker for Java/Spring Boot
     plan: free  # Free tier (spins down after 15 min inactivity)
     region: singapore
-    rootDirectory: backend
+    # No rootDirectory needed - Dockerfile path is relative to repo root
     # Docker handles build and start commands automatically via Dockerfile
     envVars:
       - key: SPRING_PROFILES_ACTIVE
