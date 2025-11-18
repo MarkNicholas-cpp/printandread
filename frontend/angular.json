@@ -30,7 +30,7 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/printandread/browser",
+              "outputPath": "dist/printandread",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
