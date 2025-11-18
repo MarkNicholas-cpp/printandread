@@ -12,6 +12,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet">
+  <!-- Fallback redirect for root path -->
+  <script>
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+      window.location.replace('/home');
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
