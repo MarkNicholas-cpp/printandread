@@ -17,11 +17,6 @@ export class App implements OnInit, OnDestroy {
   constructor(private router: Router) { }
 
   ngOnInit(): void {
-    // Ensure root path redirects to /home
-    if (this.router.url === '/' || this.router.url === '') {
-      this.router.navigate(['/home'], { replaceUrl: true });
-    }
-
     // Scroll to top on route change with slower animation
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
