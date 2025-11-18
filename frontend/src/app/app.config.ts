@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInitialNavigation } from '@angular/router';
 
 import { routes } from './app.routes';
 
@@ -9,6 +9,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
-    provideRouter(routes, withComponentInputBinding())
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withInitialNavigation()
+    )
   ]
 };
