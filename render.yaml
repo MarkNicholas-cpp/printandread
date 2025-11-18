@@ -13,8 +13,9 @@ services:
     runtime: docker  # Using Docker for Java/Spring Boot
     plan: free  # Free tier (spins down after 15 min inactivity)
     region: singapore
-    rootDirectory: backend  # Build context is backend folder
-    # Dockerfile Path will be "Dockerfile" (relative to rootDirectory/backend)
+    # DO NOT set rootDirectory - it causes path doubling with Docker Build Context
+    dockerfilePath: backend/Dockerfile  # Path from repo root
+    # Docker Build Context Directory must be set to "backend" in dashboard manually
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production
