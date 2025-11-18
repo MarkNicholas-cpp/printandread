@@ -17,16 +17,22 @@ export class App implements OnInit, OnDestroy {
   constructor(private router: Router) { }
 
   ngOnInit(): void {
+    console.log('✅ App component initialized');
+    
     // Scroll to top on route change with slower animation
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
+        console.log('📍 Navigation ended, scrolling to top');
         // Use a slower, smoother scroll
         window.scrollTo({
           top: 0,
           behavior: 'smooth'
         });
       });
+    
+    // Log initial route
+    console.log('📍 Initial route:', this.router.url);
   }
 
   ngOnDestroy(): void {
