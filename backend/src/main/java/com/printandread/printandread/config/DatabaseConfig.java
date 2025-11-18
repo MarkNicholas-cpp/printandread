@@ -1,24 +1,51 @@
 package com.printandread.printandread.config;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 
 import javax.sql.DataSource;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @Profile("production")
 public class DatabaseConfig {
 
-    private final Environment environment;
+    private final ConfigurableEnvironment environment;
 
-    public DatabaseConfig(Environment environment) {
+    public DatabaseConfig(ConfigurableEnvironment environment) {
         this.environment = environment;
+        // Convert URL early before Spring Boot reads it
+        convertDatabaseUrlEarly();
+    }
+
+    /**
+     * Converts the database URL early in the Spring Boot lifecycle
+     * so that Flyway and other components get the correct JDBC URL
+     */
+    private void convertDatabaseUrlEarly() {
+        String datasourceUrl = environment.getProperty("SPRING_DATASOURCE_URL");
+        if (datasourceUrl == null || datasourceUrl.isEmpty()) {
+            datasourceUrl = environment.getProperty("spring.datasource.url");
+        }
+        
+        if (datasourceUrl != null && !datasourceUrl.isEmpty() && datasourceUrl.startsWith("postgresql://")) {
+            String jdbcUrl = convertToJdbcUrl(datasourceUrl);
+            
+            // Override the property so Spring Boot uses the converted URL
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("spring.datasource.url", jdbcUrl);
+            environment.getPropertySources().addFirst(new MapPropertySource("converted-db-url", properties));
+        }
     }
 
     @Bean
@@ -46,6 +73,21 @@ public class DatabaseConfig {
     @Primary
     public DataSource dataSource(DataSourceProperties properties) {
         return properties.initializeDataSourceBuilder().build();
+    }
+
+    /**
+     * Configure Flyway to use our DataSource
+     */
+    @Bean(initMethod = "migrate")
+    public Flyway flyway(DataSource dataSource) {
+        return Flyway.configure()
+                .dataSource(dataSource)
+                .locations("classpath:db/migration")
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true)
+                .cleanDisabled(true)
+                .outOfOrder(false)
+                .load();
     }
 
     /**
