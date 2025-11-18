@@ -53,5 +53,5 @@ services:
     region: singapore
     rootDirectory: frontend
     buildCommand: npm install && npm run build -- --configuration=production
-    staticPublishPath: dist/printandread/browser
+    staticPublishPath: dist/printandread/browser  # Angular 20 outputs to dist/{project}/browser
 
