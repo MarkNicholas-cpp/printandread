@@ -1,16 +1,18 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>Printandread</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Meta refresh redirect for root path (works even if JS fails) -->
+  <!-- Immediate redirect for root path - runs before anything else -->
   <script>
-    if (window.location.pathname === '/' || window.location.pathname === '') {
-      window.location.replace('/home');
-    }
+    (function() {
+      var path = window.location.pathname;
+      if (path === '/' || path === '' || path === '/index.html') {
+        window.location.href = '/home';
+      }
+    })();
   </script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,9 +22,7 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet">
 </head>
-
 <body>
   <app-root></app-root>
 </body>
-
 </html>
