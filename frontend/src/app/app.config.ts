@@ -9,10 +9,10 @@ function initializeApp(router: Router): () => Promise<void> {
   return () => {
     return new Promise<void>((resolve) => {
       const currentPath = window.location.pathname;
-      if (currentPath === '/' || currentPath === '') {
-        router.navigate(['/home'], { replaceUrl: true }).then(() => {
-          resolve();
-        });
+      if (currentPath === '/' || currentPath === '' || currentPath === '/index.html') {
+        // Use window.location for immediate redirect before Angular loads
+        window.location.href = '/home';
+        resolve();
       } else {
         resolve();
       }
