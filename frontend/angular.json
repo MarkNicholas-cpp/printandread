@@ -31,6 +31,7 @@
           "configurations": {
             "production": {
               "outputPath": "dist/printandread",
+              "baseHref": "/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
