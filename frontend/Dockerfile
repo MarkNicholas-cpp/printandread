@@ -20,14 +20,15 @@ RUN npm run build -- --configuration production
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 
-# Remove default nginx configuration
-RUN rm -rf /etc/nginx/conf.d/default.conf
+# Remove default nginx configuration and HTML files
+RUN rm -rf /etc/nginx/conf.d/default.conf && \
+    rm -rf /usr/share/nginx/html/*
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application from build stage
-# Use wildcard to copy all contents of the dist folder
+# Copy all contents from the Angular build output
 COPY --from=build /app/dist/printandread/ /usr/share/nginx/html/
 
 # Set proper permissions
