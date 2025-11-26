@@ -15,9 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/materials")
-@CrossOrigin(origins = "https://printandread-frontend.onrender.com", 
-             allowCredentials = "true",
-             maxAge = 3600)
 public class MaterialController {
 
     private final MaterialService materialService;
