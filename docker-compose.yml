@@ -28,16 +28,18 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: production
+      # Development profile for local development
+      # Change to 'production' if you want to test production config locally
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/printandread
       SPRING_DATASOURCE_USERNAME: printandread_user
       SPRING_DATASOURCE_PASSWORD: printandread_password
       PORT: 8080
       FRONTEND_URL: http://localhost:3000
       # Cloudinary settings - set these in .env file or override here
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-deqnohf2h}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-248939745186147}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-gJstoqETDXmVh21U23zqmyRstgQ}
     depends_on:
       db:
         condition: service_healthy
