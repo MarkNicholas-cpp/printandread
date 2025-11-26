@@ -7,92 +7,16 @@
 --              This table is optional and can remain empty.
 -- =====================================================
 
--- =====================================================
--- ENSURE ALL BASE TABLES EXIST (from V000)
--- =====================================================
--- V000 may have been skipped during baseline, so we ensure
--- all base tables exist before proceeding with Phase 2 migrations
--- =====================================================
-
--- Create branch table
+-- Ensure printnread_branch table exists (should be created by V000)
+-- If it doesn't exist, create it first
 CREATE TABLE IF NOT EXISTS printnread_branch (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL
 );
+
+-- Create index on branch code if it doesn't exist
 CREATE INDEX IF NOT EXISTS idx_printnread_branch_code ON printnread_branch(code);
-
--- Create year_level table
-CREATE TABLE IF NOT EXISTS printnread_year_level (
-    id BIGSERIAL PRIMARY KEY,
-    year_number INTEGER NOT NULL UNIQUE
-);
-CREATE INDEX IF NOT EXISTS idx_printnread_year_level_year_number ON printnread_year_level(year_number);
-
--- Create subject table (base version, Phase 2 columns will be added later)
-CREATE TABLE IF NOT EXISTS printnread_subject (
-    id BIGSERIAL PRIMARY KEY,
-    code VARCHAR(30),
-    name VARCHAR(150) NOT NULL,
-    branch_id BIGINT NOT NULL,
-    year_id BIGINT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_printnread_subject_branch_id ON printnread_subject(branch_id);
-CREATE INDEX IF NOT EXISTS idx_printnread_subject_year_id ON printnread_subject(year_id);
-
--- Create material table
-CREATE TABLE IF NOT EXISTS printnread_material (
-    id BIGSERIAL PRIMARY KEY,
-    subject_id BIGINT NOT NULL,
-    material_type VARCHAR(50) NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    cloudinary_url TEXT NOT NULL,
-    public_id TEXT NOT NULL,
-    file_type VARCHAR(20) NOT NULL DEFAULT 'pdf',
-    uploaded_on TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_printnread_material_subject_id ON printnread_material(subject_id);
-
--- Add foreign key constraints if they don't exist
-DO $$
-BEGIN
-    -- Subject -> Branch
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'fk_printnread_subject_branch'
-    ) THEN
-        ALTER TABLE printnread_subject
-        ADD CONSTRAINT fk_printnread_subject_branch 
-            FOREIGN KEY (branch_id) 
-            REFERENCES printnread_branch(id);
-    END IF;
-    
-    -- Subject -> Year Level
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'fk_printnread_subject_year_level'
-    ) THEN
-        ALTER TABLE printnread_subject
-        ADD CONSTRAINT fk_printnread_subject_year_level 
-            FOREIGN KEY (year_id) 
-            REFERENCES printnread_year_level(id);
-    END IF;
-    
-    -- Material -> Subject
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'fk_printnread_material_subject'
-    ) THEN
-        ALTER TABLE printnread_material
-        ADD CONSTRAINT fk_printnread_material_subject 
-            FOREIGN KEY (subject_id) 
-            REFERENCES printnread_subject(id);
-    END IF;
-END $$;
-
--- =====================================================
--- MIGRATION 2: Create SubBranch Table
--- =====================================================
 
 -- Create sub_branch table
 CREATE TABLE IF NOT EXISTS printnread_sub_branch (
