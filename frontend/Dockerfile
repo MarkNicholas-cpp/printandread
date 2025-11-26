@@ -20,11 +20,18 @@ RUN npm run build -- --configuration production
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 
+# Remove default nginx configuration
+RUN rm -rf /etc/nginx/conf.d/default.conf
+
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application from build stage
-COPY --from=build /app/dist/printandread /usr/share/nginx/html
+# Use wildcard to copy all contents of the dist folder
+COPY --from=build /app/dist/printandread/ /usr/share/nginx/html/
+
+# Set proper permissions
+RUN chmod -R 755 /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
