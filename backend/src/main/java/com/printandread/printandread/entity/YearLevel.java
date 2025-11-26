@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "year_level")
+@Table(name = "printnread_year_level")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

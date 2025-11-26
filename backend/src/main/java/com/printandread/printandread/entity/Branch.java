@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "branch")
+@Table(name = "printnread_branch")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

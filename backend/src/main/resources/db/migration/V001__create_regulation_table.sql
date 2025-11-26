@@ -8,7 +8,7 @@
 -- =====================================================
 
 -- Create regulation table
-CREATE TABLE IF NOT EXISTS regulation (
+CREATE TABLE IF NOT EXISTS printnread_regulation (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     code VARCHAR(20) NOT NULL UNIQUE,
@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS regulation (
 );
 
 -- Create index on code for faster lookups
-CREATE INDEX IF NOT EXISTS idx_regulation_code ON regulation(code);
+CREATE INDEX IF NOT EXISTS idx_printnread_regulation_code ON printnread_regulation(code);
 
 -- Insert initial regulation data
 -- These are common regulations used in Indian colleges
-INSERT INTO regulation (name, code, start_year, end_year, description)
+INSERT INTO printnread_regulation (name, code, start_year, end_year, description)
 VALUES 
     ('Regulation 2018', 'R18', 2018, 2021, 'Regulation introduced in 2018, active until 2021'),
     ('Regulation 2020', 'R20', 2020, 2023, 'Regulation introduced in 2020, active until 2023'),
@@ -30,7 +30,7 @@ VALUES
 ON CONFLICT (code) DO NOTHING;
 
 -- Add comment to table
-COMMENT ON TABLE regulation IS 'Stores academic regulations (R16, R18, R20, R22, etc.) used by colleges';
-COMMENT ON COLUMN regulation.code IS 'Unique regulation code (e.g., R18, R20, R22)';
-COMMENT ON COLUMN regulation.end_year IS 'NULL if regulation is currently active';
+COMMENT ON TABLE printnread_regulation IS 'Stores academic regulations (R16, R18, R20, R22, etc.) used by colleges';
+COMMENT ON COLUMN printnread_regulation.code IS 'Unique regulation code (e.g., R18, R20, R22)';
+COMMENT ON COLUMN printnread_regulation.end_year IS 'NULL if regulation is currently active';
 

@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "material")
+@Table(name = "printnread_material")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

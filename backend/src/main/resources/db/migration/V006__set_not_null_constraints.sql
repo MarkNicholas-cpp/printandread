@@ -12,8 +12,8 @@
 
 -- Step 1: Verify no NULL values exist (safety check)
 -- If these queries return any rows, DO NOT proceed with this migration
--- SELECT COUNT(*) FROM subject WHERE regulation_id IS NULL;
--- SELECT COUNT(*) FROM subject WHERE semester_id IS NULL;
+-- SELECT COUNT(*) FROM printnread_subject WHERE regulation_id IS NULL;
+-- SELECT COUNT(*) FROM printnread_subject WHERE semester_id IS NULL;
 
 -- Step 2: Set regulation_id to NOT NULL
 -- This will fail if any NULL values exist
@@ -22,20 +22,20 @@ BEGIN
     -- Check if constraint already exists
     IF NOT EXISTS (
         SELECT 1 FROM pg_constraint 
-        WHERE conname = 'subject_regulation_id_not_null'
+        WHERE conname = 'printnread_subject_regulation_id_not_null'
     ) THEN
         -- First, ensure no NULLs exist
-        IF EXISTS (SELECT 1 FROM subject WHERE regulation_id IS NULL) THEN
+        IF EXISTS (SELECT 1 FROM printnread_subject WHERE regulation_id IS NULL) THEN
             RAISE EXCEPTION 'Cannot set NOT NULL: Some subjects have NULL regulation_id. Run Migration 5 first.';
         END IF;
         
         -- Set NOT NULL constraint
-        ALTER TABLE subject 
+        ALTER TABLE printnread_subject 
         ALTER COLUMN regulation_id SET NOT NULL;
         
         -- Add constraint name for documentation
-        ALTER TABLE subject 
-        ADD CONSTRAINT subject_regulation_id_not_null 
+        ALTER TABLE printnread_subject 
+        ADD CONSTRAINT printnread_subject_regulation_id_not_null 
         CHECK (regulation_id IS NOT NULL);
     END IF;
 END $$;
@@ -54,7 +54,7 @@ END $$;
 --     is_nullable,
 --     data_type
 -- FROM information_schema.columns
--- WHERE table_name = 'subject'
+-- WHERE table_name = 'printnread_subject'
 --   AND column_name IN ('regulation_id', 'semester_id', 'sub_branch_id')
 -- ORDER BY column_name;
 

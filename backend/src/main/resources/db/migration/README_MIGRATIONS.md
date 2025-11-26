@@ -10,11 +10,11 @@ This directory contains **8 sequential migration scripts** that create the compl
 
 **Migrations MUST be executed in numerical order:**
 
-1. `000_create_base_tables.sql` - Creates base tables (branch, year_level, subject, material)
-2. `001_create_regulation_table.sql` - Creates regulation table
-3. `002_create_sub_branch_table.sql` - Creates sub_branch table
-4. `003_create_semester_table.sql` - Creates semester table
-5. `004_alter_subject_table_add_columns.sql` - Adds Phase 2 columns to subject
+1. `000_create_base_tables.sql` - Creates base tables (printnread_branch, printnread_year_level, printnread_subject, printnread_material)
+2. `001_create_regulation_table.sql` - Creates printnread_regulation table
+3. `002_create_sub_branch_table.sql` - Creates printnread_sub_branch table
+4. `003_create_semester_table.sql` - Creates printnread_semester table
+5. `004_alter_subject_table_add_columns.sql` - Adds Phase 2 columns to printnread_subject
 6. `005_migrate_existing_subject_data.sql` - Migrates existing data
 7. `006_set_not_null_constraints.sql` - Sets NOT NULL constraints
 8. `007_fix_duplicate_constraints.sql` - Cleans up duplicate constraints
@@ -64,24 +64,26 @@ Flyway will automatically run all migrations when your Spring Boot application s
 
 ### **Tables Created:**
 
-1. **branch** - Academic branches (CSE, ECE, etc.)
-2. **year_level** - Academic years (1, 2, 3, 4)
-3. **subject** - Subjects with relationships to branch, year, regulation, semester
-4. **material** - Study materials (PDFs) linked to subjects
-5. **regulation** - Academic regulations (R18, R20, R22, R23, etc.)
-6. **semester** - Semesters (1-8) mapped to years
-7. **sub_branch** - Optional branch specializations
+All tables are prefixed with `printnread_` to identify them as belonging to this project:
+
+1. **printnread_branch** - Academic branches (CSE, ECE, etc.)
+2. **printnread_year_level** - Academic years (1, 2, 3, 4)
+3. **printnread_subject** - Subjects with relationships to branch, year, regulation, semester
+4. **printnread_material** - Study materials (PDFs) linked to subjects
+5. **printnread_regulation** - Academic regulations (R18, R20, R22, R23, etc.)
+6. **printnread_semester** - Semesters (1-8) mapped to years
+7. **printnread_sub_branch** - Optional branch specializations
 
 ### **Key Relationships:**
 
-- `subject.branch_id` → `branch.id` (required)
-- `subject.year_id` → `year_level.id` (required)
-- `subject.regulation_id` → `regulation.id` (required, NOT NULL)
-- `subject.semester_id` → `semester.id` (optional, nullable)
-- `subject.sub_branch_id` → `sub_branch.id` (optional, nullable)
-- `material.subject_id` → `subject.id` (required)
-- `semester.year_id` → `year_level.id` (required)
-- `sub_branch.branch_id` → `branch.id` (required)
+- `printnread_subject.branch_id` → `printnread_branch.id` (required)
+- `printnread_subject.year_id` → `printnread_year_level.id` (required)
+- `printnread_subject.regulation_id` → `printnread_regulation.id` (required, NOT NULL)
+- `printnread_subject.semester_id` → `printnread_semester.id` (optional, nullable)
+- `printnread_subject.sub_branch_id` → `printnread_sub_branch.id` (optional, nullable)
+- `printnread_material.subject_id` → `printnread_subject.id` (required)
+- `printnread_semester.year_id` → `printnread_year_level.id` (required)
+- `printnread_sub_branch.branch_id` → `printnread_branch.id` (required)
 
 ---
 
@@ -98,13 +100,13 @@ WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
-**Expected:** branch, material, regulation, semester, sub_branch, subject, year_level
+**Expected:** printnread_branch, printnread_material, printnread_regulation, printnread_semester, printnread_sub_branch, printnread_subject, printnread_year_level
 
 ### **2. Check Subject Table Structure:**
 ```sql
 SELECT column_name, data_type, is_nullable
 FROM information_schema.columns
-WHERE table_name = 'subject'
+WHERE table_name = 'printnread_subject'
 ORDER BY ordinal_position;
 ```
 
@@ -114,7 +116,7 @@ ORDER BY ordinal_position;
 ```sql
 SELECT conname, contype, pg_get_constraintdef(oid)
 FROM pg_constraint
-WHERE conrelid = 'subject'::regclass
+WHERE conrelid = 'printnread_subject'::regclass
 ORDER BY contype, conname;
 ```
 
@@ -124,14 +126,14 @@ ORDER BY contype, conname;
 SELECT COUNT(*) as total_subjects,
        COUNT(regulation_id) as with_regulation,
        COUNT(semester_id) as with_semester
-FROM subject;
+FROM printnread_subject;
 ```
 
 ### **5. Check Semester Structure:**
 ```sql
 SELECT yl.year_number, sem.sem_number, COUNT(*) as count
-FROM semester sem
-JOIN year_level yl ON sem.year_id = yl.id
+FROM printnread_semester sem
+JOIN printnread_year_level yl ON sem.year_id = yl.id
 GROUP BY yl.year_number, sem.sem_number
 ORDER BY yl.year_number, sem.sem_number;
 ```
@@ -143,21 +145,21 @@ ORDER BY yl.year_number, sem.sem_number;
 ## 🔍 **Migration Details**
 
 ### **Migration 000: Base Tables**
-- Creates branch, year_level, subject, material tables
+- Creates printnread_branch, printnread_year_level, printnread_subject, printnread_material tables
 - Sets up basic foreign key relationships
 - Creates initial indexes
 
 ### **Migration 001: Regulation Table**
-- Creates regulation table
+- Creates printnread_regulation table
 - Inserts default regulations (R18, R20, R22)
 - Creates index on code
 
 ### **Migration 002: SubBranch Table**
-- Creates sub_branch table for optional specializations
-- Sets up foreign key to branch
+- Creates printnread_sub_branch table for optional specializations
+- Sets up foreign key to printnread_branch
 
 ### **Migration 003: Semester Table**
-- Creates semester table
+- Creates printnread_semester table
 - Maps semesters to year levels (Year 1→Sem 1,2, etc.)
 - Creates unique constraint on (sem_number, year_id)
 

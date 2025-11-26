@@ -77,6 +77,10 @@ public class DatabaseConfig {
     /**
      * Configure Flyway to use our DataSource
      */
+    /**
+     * Configure Flyway to use our DataSource
+     * Uses project-specific schema history table to prevent conflicts when multiple applications share the same database
+     */
     @Bean(initMethod = "migrate")
     public Flyway flyway(DataSource dataSource) {
         return Flyway.configure()
@@ -86,6 +90,7 @@ public class DatabaseConfig {
                 .validateOnMigrate(true)
                 .cleanDisabled(true)
                 .outOfOrder(false)
+                .table("flyway_schema_history_printnread")  // Project-specific schema history table
                 .load();
     }
 
