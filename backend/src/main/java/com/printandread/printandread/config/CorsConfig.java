@@ -3,6 +3,7 @@ package com.printandread.printandread.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -23,33 +24,49 @@ public class CorsConfig {
     private boolean allowCredentials;
     
     @Bean
+    @Order(-100) // Ensure CORS filter runs early
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Parse allowed origins from environment variable or use wildcard
+        // Parse allowed origins from environment variable
         if (allowedOrigins != null && !allowedOrigins.equals("*") && !allowedOrigins.isEmpty()) {
-            // Multiple origins separated by comma
+            // Multiple origins separated by comma - trim whitespace
             String[] origins = allowedOrigins.split(",");
-            config.setAllowedOrigins(Arrays.asList(origins));
+            List<String> originList = Arrays.stream(origins)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            
+            // When using specific origins with credentials, must use setAllowedOrigins (not patterns)
+            config.setAllowedOrigins(originList);
+            config.setAllowCredentials(allowCredentials);
+            
+            // Log for debugging
+            System.out.println("CORS Configuration: Allowed Origins = " + originList);
+            System.out.println("CORS Configuration: Allow Credentials = " + allowCredentials);
         } else {
-            // Allow all origins in development, or specific origins in production
+            // Development mode: allow all origins (but disable credentials for wildcard)
             config.setAllowedOriginPatterns(List.of("*"));
+            // When using wildcard patterns, credentials must be false
+            config.setAllowCredentials(false);
+            System.out.println("CORS Configuration: Using wildcard pattern (development mode)");
         }
         
         // Parse allowed methods
         if (allowedMethods != null && !allowedMethods.isEmpty()) {
             String[] methods = allowedMethods.split(",");
-            config.setAllowedMethods(Arrays.asList(methods));
+            List<String> methodList = Arrays.stream(methods)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            config.setAllowedMethods(methodList);
         } else {
             config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         }
         
         // Allow all headers
         config.setAllowedHeaders(List.of("*"));
-        
-        // Allow credentials
-        config.setAllowCredentials(allowCredentials);
         
         // Expose all response headers
         config.setExposedHeaders(List.of("*"));
