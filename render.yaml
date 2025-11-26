@@ -1,13 +1,8 @@
 services:
-  # PostgreSQL Database
-  - type: pspg
-    name: printandread-db
-    plan: free  # Free for 90 days, then $7/month
-    databaseName: printandread
-    user: printandread_user
-    region: singapore
-
   # Backend Web Service
+  # Note: Using existing database - connection string must be set manually in Render dashboard
+  # Database: production_db_postgres_6gz5
+  # Hostname: dpg-d4j0io6uk2gs73bhkldg-a
   - type: web
     name: printandread-backend
     runtime: docker  # Using Docker for Java/Spring Boot
@@ -19,18 +14,16 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production  # Use production profile
+      # Database connection - MUST be set manually in Render dashboard:
+      # SPRING_DATASOURCE_URL=postgresql://production_db_postgres_6gz5_user:SJetQUZD8GwXdMZx9iyhAK4n2EubZZTF@dpg-d4j0io6uk2gs73bhkldg-a:5432/production_db_postgres_6gz5
+      # SPRING_DATASOURCE_USERNAME=production_db_postgres_6gz5_user
+      # SPRING_DATASOURCE_PASSWORD=SJetQUZD8GwXdMZx9iyhAK4n2EubZZTF
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: printandread-db
-          property: connectionString
+        sync: false  # Set manually in Render dashboard
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: printandread-db
-          property: user
+        sync: false  # Set manually in Render dashboard
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: printandread-db
-          property: password
+        sync: false  # Set manually in Render dashboard
       - key: PORT
         value: 8080
       - key: FRONTEND_URL

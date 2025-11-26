@@ -61,8 +61,20 @@ public class DatabaseConfig {
 
         // Convert PostgreSQL connection string to JDBC format if needed
         if (datasourceUrl != null && !datasourceUrl.isEmpty()) {
-            String jdbcUrl = convertToJdbcUrl(datasourceUrl);
-            properties.setUrl(jdbcUrl);
+            try {
+                String jdbcUrl = convertToJdbcUrl(datasourceUrl);
+                properties.setUrl(jdbcUrl);
+                
+                // Log the connection (without password) for debugging
+                String safeUrl = jdbcUrl.replaceAll(":[^:@]+@", ":****@");
+                System.out.println("Database connection URL: " + safeUrl);
+            } catch (Exception e) {
+                System.err.println("ERROR: Failed to convert database URL: " + e.getMessage());
+                System.err.println("Original URL format: " + (datasourceUrl != null ? datasourceUrl.substring(0, Math.min(50, datasourceUrl.length())) + "..." : "null"));
+                throw e;
+            }
+        } else {
+            System.err.println("WARNING: SPRING_DATASOURCE_URL is not set!");
         }
 
         return properties;
@@ -97,34 +109,61 @@ public class DatabaseConfig {
     /**
      * Converts PostgreSQL connection string (postgresql://user:pass@host/db)
      * to JDBC format (jdbc:postgresql://host:port/database)
-     * Note: Credentials are removed from URL as they're provided separately
+     * Properly handles Render's connection string format with credentials
      */
     private String convertToJdbcUrl(String url) {
         if (url == null || url.isEmpty()) {
             throw new IllegalArgumentException("Database URL is not set");
         }
 
-        // If already JDBC format, remove credentials if present
+        // If already JDBC format, return as is (but clean up credentials if present)
         if (url.startsWith("jdbc:postgresql://")) {
-            // Remove credentials from JDBC URL if present
-            return url.replaceAll("jdbc:postgresql://[^:]+:[^@]+@", "jdbc:postgresql://");
+            // If credentials are embedded, remove them (they're provided separately)
+            if (url.contains("@") && !url.contains("?")) {
+                // Format: jdbc:postgresql://user:pass@host:port/db
+                return url.replaceAll("jdbc:postgresql://[^:]+:[^@]+@", "jdbc:postgresql://");
+            }
+            return url;
         }
 
-        // If PostgreSQL connection string format, convert it
+        // If PostgreSQL connection string format (Render format), convert it
         if (url.startsWith("postgresql://")) {
             try {
-                // Replace postgresql:// with http:// temporarily for URI parsing
-                URI uri = new URI(url.replace("postgresql://", "http://"));
-                String host = uri.getHost();
-                int port = uri.getPort() == -1 ? 5432 : uri.getPort();
-                String path = uri.getPath();
-                String database = path.startsWith("/") ? path.substring(1) : path;
-
-                // Construct JDBC URL without credentials (they're provided via
-                // username/password properties)
+                // Parse the connection string: postgresql://user:password@host:port/database
+                // Handle special characters in password by using proper URI parsing
+                String cleanUrl = url;
+                
+                // Extract parts manually to handle special characters in password
+                String withoutProtocol = url.substring("postgresql://".length());
+                int atIndex = withoutProtocol.lastIndexOf("@");
+                
+                if (atIndex == -1) {
+                    throw new IllegalArgumentException("Invalid connection string format: missing @");
+                }
+                
+                String credentials = withoutProtocol.substring(0, atIndex);
+                String hostAndPath = withoutProtocol.substring(atIndex + 1);
+                
+                // Split credentials
+                int colonIndex = credentials.indexOf(":");
+                String username = colonIndex > 0 ? credentials.substring(0, colonIndex) : credentials;
+                String password = colonIndex > 0 ? credentials.substring(colonIndex + 1) : "";
+                
+                // Parse host and database
+                int slashIndex = hostAndPath.indexOf("/");
+                String hostPort = slashIndex > 0 ? hostAndPath.substring(0, slashIndex) : hostAndPath;
+                String database = slashIndex > 0 ? hostAndPath.substring(slashIndex + 1) : "";
+                
+                // Split host and port
+                int portColonIndex = hostPort.lastIndexOf(":");
+                String host = portColonIndex > 0 ? hostPort.substring(0, portColonIndex) : hostPort;
+                int port = portColonIndex > 0 ? Integer.parseInt(hostPort.substring(portColonIndex + 1)) : 5432;
+                
+                // Construct JDBC URL without credentials (username/password provided separately)
+                // Use the internal hostname as-is from Render
                 return String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
             } catch (Exception e) {
-                throw new IllegalArgumentException("Invalid database URL format: " + url, e);
+                throw new IllegalArgumentException("Invalid database URL format: " + url + ". Error: " + e.getMessage(), e);
             }
         }
 
