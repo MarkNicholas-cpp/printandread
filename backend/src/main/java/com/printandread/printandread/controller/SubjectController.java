@@ -12,6 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/subjects")
+@CrossOrigin(origins = "https://printandread-frontend.onrender.com", 
+             allowCredentials = "true",
+             maxAge = 3600)
 public class SubjectController {
     
     private final SubjectService subjectService;

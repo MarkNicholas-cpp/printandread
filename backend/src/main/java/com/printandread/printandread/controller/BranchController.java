@@ -12,6 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/branches")
+@CrossOrigin(origins = "https://printandread-frontend.onrender.com", 
+             allowCredentials = "true",
+             maxAge = 3600)
 public class BranchController {
     
     private final BranchService branchService;

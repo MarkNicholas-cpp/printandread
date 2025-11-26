@@ -11,6 +11,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin(origins = "https://printandread-frontend.onrender.com", 
+             allowCredentials = "true",
+             maxAge = 3600)
 public class RootController {
 
     @GetMapping
