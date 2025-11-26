@@ -7,6 +7,17 @@
 --              This table is optional and can remain empty.
 -- =====================================================
 
+-- Ensure printnread_branch table exists (should be created by V000)
+-- If it doesn't exist, create it first
+CREATE TABLE IF NOT EXISTS printnread_branch (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL
+);
+
+-- Create index on branch code if it doesn't exist
+CREATE INDEX IF NOT EXISTS idx_printnread_branch_code ON printnread_branch(code);
+
 -- Create sub_branch table
 CREATE TABLE IF NOT EXISTS printnread_sub_branch (
     id BIGSERIAL PRIMARY KEY,
