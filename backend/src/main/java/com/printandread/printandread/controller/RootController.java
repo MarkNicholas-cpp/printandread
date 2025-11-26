@@ -1,6 +1,7 @@
 package com.printandread.printandread.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = "https://printandread-frontend.onrender.com", 
-             allowCredentials = "true",
-             maxAge = 3600)
+@CrossOrigin(origins = "https://printandread-frontend.onrender.com", allowCredentials = "true", maxAge = 3600)
 public class RootController {
 
     @GetMapping
@@ -24,15 +23,13 @@ public class RootController {
         response.put("status", "running");
         response.put("timestamp", LocalDateTime.now());
         response.put("endpoints", Map.of(
-            "health", "/api/health",
-            "branches", "/api/branches",
-            "subjects", "/api/subjects",
-            "materials", "/api/materials",
-            "regulations", "/api/regulations",
-            "years", "/api/years",
-            "semesters", "/api/semesters"
-        ));
+                "health", "/api/health",
+                "branches", "/api/branches",
+                "subjects", "/api/subjects",
+                "materials", "/api/materials",
+                "regulations", "/api/regulations",
+                "years", "/api/years",
+                "semesters", "/api/semesters"));
         return ResponseEntity.ok(response);
     }
 }
-
