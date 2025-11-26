@@ -28,8 +28,8 @@ RUN rm -rf /etc/nginx/conf.d/default.conf && \
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application from build stage
-# Copy all contents from the Angular build output (without trailing slash to copy contents)
-COPY --from=build /app/dist/printandread /usr/share/nginx/html
+# Angular outputs to browser/ subdirectory in newer versions
+COPY --from=build /app/dist/printandread/browser /usr/share/nginx/html
 
 # Verify files were copied (for debugging - will fail build if no files)
 RUN ls -la /usr/share/nginx/html/ && \
