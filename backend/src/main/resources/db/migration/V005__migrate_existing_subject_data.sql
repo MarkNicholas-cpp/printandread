@@ -7,6 +7,19 @@
 --              backward compatibility and safe migration.
 -- =====================================================
 
+-- Ensure all required tables exist before data migration
+-- These should already exist from previous migrations, but we ensure they're there
+
+-- Ensure printnread_regulation exists and has R22
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM printnread_regulation WHERE code = 'R22') THEN
+        INSERT INTO printnread_regulation (name, code, start_year, end_year, description)
+        VALUES ('Regulation 2022', 'R22', 2022, NULL, 'Current regulation introduced in 2022')
+        ON CONFLICT (code) DO NOTHING;
+    END IF;
+END $$;
+
 -- Step 1: Assign default regulation (R22) to all subjects without regulation_id
 UPDATE printnread_subject 
 SET regulation_id = (

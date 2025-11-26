@@ -7,6 +7,41 @@
 --              safe data migration in next step.
 -- =====================================================
 
+-- Ensure all required base tables exist (should be created by V000)
+CREATE TABLE IF NOT EXISTS printnread_subject (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(30),
+    name VARCHAR(150) NOT NULL,
+    branch_id BIGINT NOT NULL,
+    year_id BIGINT NOT NULL
+);
+
+-- Ensure printnread_regulation exists (should be created by V001)
+CREATE TABLE IF NOT EXISTS printnread_regulation (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    start_year INTEGER NOT NULL,
+    end_year INTEGER,
+    description TEXT
+);
+
+-- Ensure printnread_sub_branch exists (should be created by V002)
+CREATE TABLE IF NOT EXISTS printnread_sub_branch (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(30) NOT NULL,
+    branch_id BIGINT NOT NULL
+);
+
+-- Ensure printnread_semester exists (should be created by V003)
+CREATE TABLE IF NOT EXISTS printnread_semester (
+    id BIGSERIAL PRIMARY KEY,
+    sem_number INTEGER NOT NULL CHECK (sem_number >= 1 AND sem_number <= 8),
+    year_id BIGINT NOT NULL,
+    CONSTRAINT uk_printnread_semester_year_unique UNIQUE (sem_number, year_id)
+);
+
 -- Add regulation_id column (nullable initially)
 ALTER TABLE printnread_subject 
 ADD COLUMN IF NOT EXISTS regulation_id BIGINT;

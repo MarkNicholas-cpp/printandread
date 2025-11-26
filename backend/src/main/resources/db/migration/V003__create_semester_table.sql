@@ -8,6 +8,15 @@
 --              Year 3 → Sem 5,6 | Year 4 → Sem 7,8
 -- =====================================================
 
+-- Ensure printnread_year_level table exists (should be created by V000)
+CREATE TABLE IF NOT EXISTS printnread_year_level (
+    id BIGSERIAL PRIMARY KEY,
+    year_number INTEGER NOT NULL UNIQUE
+);
+
+-- Create index on year_number if it doesn't exist
+CREATE INDEX IF NOT EXISTS idx_printnread_year_level_year_number ON printnread_year_level(year_number);
+
 -- Create semester table
 CREATE TABLE IF NOT EXISTS printnread_semester (
     id BIGSERIAL PRIMARY KEY,
