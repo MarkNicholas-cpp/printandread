@@ -24,14 +24,13 @@ import java.io.IOException;
 @Order(-1000)
 public class UniversalCorsFilter implements Filter {
     
-    private static final String ALLOWED_ORIGIN = "https://printandread-frontend.onrender.com";
     private static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
     private static final String ALLOWED_HEADERS = "Content-Type, Authorization, X-Requested-With, Accept, Origin";
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         System.out.println("UniversalCorsFilter initialized - CORS headers will be added to all responses");
-        System.out.println("Allowed Origin: " + ALLOWED_ORIGIN);
+        System.out.println("Allowed Origin: * (all origins)");
     }
     
     @Override
@@ -42,21 +41,23 @@ public class UniversalCorsFilter implements Filter {
         
         String origin = httpRequest.getHeader("Origin");
         
-        // Always add CORS headers if origin matches or is null (for same-origin requests)
-        if (origin == null || ALLOWED_ORIGIN.equals(origin)) {
-            // Set CORS headers
-            httpResponse.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-            httpResponse.setHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
-            httpResponse.setHeader("Access-Control-Allow-Headers", ALLOWED_HEADERS);
-            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-            httpResponse.setHeader("Access-Control-Max-Age", "3600");
-            httpResponse.setHeader("Access-Control-Expose-Headers", "*");
-            
-            // Log for debugging (only first few requests to avoid spam)
-            if (httpRequest.getRequestURI().contains("/api/materials/recent")) {
-                System.out.println("UniversalCorsFilter: Added CORS headers for request to " + httpRequest.getRequestURI());
-                System.out.println("Origin: " + origin);
-            }
+        // Allow all origins - set CORS headers for any origin
+        // When using wildcard, credentials must be false
+        if (origin != null) {
+            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+        } else {
+            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+        }
+        httpResponse.setHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
+        httpResponse.setHeader("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+        httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
+        httpResponse.setHeader("Access-Control-Max-Age", "3600");
+        httpResponse.setHeader("Access-Control-Expose-Headers", "*");
+        
+        // Log for debugging (only first few requests to avoid spam)
+        if (httpRequest.getRequestURI().contains("/api/materials/recent")) {
+            System.out.println("UniversalCorsFilter: Added CORS headers for request to " + httpRequest.getRequestURI());
+            System.out.println("Origin: " + (origin != null ? origin : "null"));
         }
         
         // Handle preflight OPTIONS requests
